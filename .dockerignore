@@ -1,0 +1,7 @@
+# Exclude everything and later include only necessary files and folders
+*
+
+# Include build dist folder with angular resources
+!dist/**/*
+# Include Nginx conf
+!build/**/*

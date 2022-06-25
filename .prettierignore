@@ -1,0 +1,8 @@
+package.json
+pnpm-lock.yaml
+dist
+.angular
+coverage
+build
+.dockerignore
+test
