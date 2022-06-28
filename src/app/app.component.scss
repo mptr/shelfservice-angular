@@ -1,19 +1,15 @@
-:host {
-	display: grid;
-	grid-template-rows: 100vh;
-	grid-template-columns: 100vw;
-	background-color: #006d88;
-	color: #fff;
-	font-family: sans-serif;
+$navHeight: 64px;
+$footerHeight: 32px;
+app-nav,
+app-footer {
+	display: block;
 }
-
-.center {
-	justify-self: center;
-	align-self: center;
-	text-align: center;
+app-nav {
+	height: $navHeight;
 }
-
-h1 {
-	font-size: 3rem;
-	line-height: 2em;
+app-footer {
+	height: $footerHeight;
+}
+mat-drawer-container {
+	min-height: calc(100% - $navHeight - $footerHeight);
 }

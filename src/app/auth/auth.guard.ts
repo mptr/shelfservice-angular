@@ -12,7 +12,7 @@ export class AuthGuard extends KeycloakAuthGuard {
 	async isAccessAllowed(route: ActivatedRouteSnapshot): Promise<boolean> {
 		console.log(route);
 		if (!this.authenticated) {
-			//log in if not logged in
+			// log in if not logged in
 			await this.keycloakService.login({
 				redirectUri: window.location.origin,
 			});
