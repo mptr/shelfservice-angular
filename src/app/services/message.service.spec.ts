@@ -30,6 +30,9 @@ describe('MessageService', () => {
 	});
 
 	it('should dismiss messages', () => {
+		service.push(m);
+		service.push(m2);
+
 		expect(service.dismiss(m)).toBe(true);
 		expect(service.messages.length).toBe(1);
 		expect(service.messages[0]).toBe(m2);

@@ -30,7 +30,6 @@ export class AuthService {
 		const base64Url = token.split('.')[1];
 		const base64 = base64Url.replace('-', '+').replace('_', '/');
 		const r = JSON.parse(window.atob(base64));
-		console.log(r);
 		// extract required attributes
 		return {
 			firstName: r.given_name,

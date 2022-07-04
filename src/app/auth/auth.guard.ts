@@ -1,16 +1,14 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
-import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthGuard extends KeycloakAuthGuard {
-	constructor(protected keycloakService: KeycloakService, route: Router, protected auth: AuthService) {
+	constructor(protected route: Router, protected keycloakService: KeycloakService) {
 		super(route, keycloakService);
 	}
 
-	async isAccessAllowed(route: ActivatedRouteSnapshot): Promise<boolean> {
-		console.log(route);
+	async isAccessAllowed(): Promise<boolean> {
 		if (!this.authenticated) {
 			// log in if not logged in
 			await this.keycloakService.login({
