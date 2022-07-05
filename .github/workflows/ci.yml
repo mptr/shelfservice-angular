@@ -45,6 +45,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-pnpm
+      - name: Setup Test Env
+        run: pnpm devenv:setup-ci
       - name: Cache pnpm modules
         uses: actions/cache@v3
         with:

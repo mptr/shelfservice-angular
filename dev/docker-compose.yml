@@ -2,7 +2,7 @@ version: '3.8'
 services:
   db:
     container_name: postgres
-    profiles: ['ci', 'dev', 'debug']
+    profiles: ['ci', 'dev']
     image: ${DOCKER_REMOTE:-docker.io}/postgres
     restart: always
     command: postgres -c 'max_connections=300'
@@ -16,7 +16,7 @@ services:
       - '5432:5432'
   pgadmin:
     container_name: pgadmin4
-    profiles: ['dev', 'debug']
+    profiles: ['dev']
     image: ${DOCKER_REMOTE:-docker.io}/dpage/pgadmin4
     restart: always
     environment:
@@ -37,30 +37,15 @@ services:
       "
 
   ## KEYCLOAK
-  kc_postgres:
-    container_name: keycloak-postgres
-    profiles: ['dev']
-    image: ${DOCKER_REMOTE:-docker.io}/postgres
-    restart: always
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
   keycloak:
     container_name: keycloak
-    profiles: ['dev']
+    profiles: ['ci', 'dev']
     image: ${DOCKER_REMOTE:-docker.io}/jboss/keycloak
     restart: always
     environment:
       KEYCLOAK_IMPORT: /tmp/realm.json
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: root
-      DB_VENDOR: POSTGRES
-      DB_ADDR: kc_postgres
-      DB_DATABASE: postgres
-      DB_USER: keycloak
-      DB_SCHEMA: public
-      DB_PASSWORD: password
     volumes:
       - ./keycloak_realm.json:/tmp/realm.json
     ports:
