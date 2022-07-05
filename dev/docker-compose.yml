@@ -50,8 +50,6 @@ services:
       - ./keycloak_realm.json:/tmp/realm.json
     ports:
       - 8080:8080
-    depends_on:
-      - kc_postgres
 
   ## MAILHOG
   mailhog:
