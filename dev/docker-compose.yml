@@ -1,40 +1,40 @@
 version: '3.8'
 services:
-  db:
-    container_name: postgres
-    profiles: ['ci', 'dev']
-    image: ${DOCKER_REMOTE:-docker.io}/postgres
-    restart: always
-    command: postgres -c 'max_connections=300'
-    stdin_open: true
-    tty: true
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secret
-      POSTGRES_DB: postgres
-    ports:
-      - '5432:5432'
-  pgadmin:
-    container_name: pgadmin4
-    profiles: ['dev']
-    image: ${DOCKER_REMOTE:-docker.io}/dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    volumes:
-      - ./pgadmin_servers.json:/pgadmin4/servers.json
-      - ./pgpass:/pgadmin4/pgpass
-    ports:
-      - '5050:80'
-    entrypoint: > # make pgpass work by copy to pgadmin user dir
-      /bin/sh -c "
-      mkdir -m 700 -p /var/lib/pgadmin/storage/admin_admin.com;
-      chown -R pgadmin:pgadmin /var/lib/pgadmin/storage/admin_admin.com;
-      cp -prv /pgadmin4/pgpass /var/lib/pgadmin/storage/admin_admin.com/;
-      chmod 600 /var/lib/pgadmin/storage/admin_admin.com/pgpass;
-      /entrypoint.sh
-      "
+  # db:
+  #   container_name: postgres
+  #   profiles: ['ci', 'dev']
+  #   image: ${DOCKER_REMOTE:-docker.io}/postgres
+  #   restart: always
+  #   command: postgres -c 'max_connections=300'
+  #   stdin_open: true
+  #   tty: true
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: secret
+  #     POSTGRES_DB: postgres
+  #   ports:
+  #     - '5432:5432'
+  # pgadmin:
+  #   container_name: pgadmin4
+  #   profiles: ['dev']
+  #   image: ${DOCKER_REMOTE:-docker.io}/dpage/pgadmin4
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: root
+  #   volumes:
+  #     - ./pgadmin_servers.json:/pgadmin4/servers.json
+  #     - ./pgpass:/pgadmin4/pgpass
+  #   ports:
+  #     - '5050:80'
+  #   entrypoint: > # make pgpass work by copy to pgadmin user dir
+  #     /bin/sh -c "
+  #     mkdir -m 700 -p /var/lib/pgadmin/storage/admin_admin.com;
+  #     chown -R pgadmin:pgadmin /var/lib/pgadmin/storage/admin_admin.com;
+  #     cp -prv /pgadmin4/pgpass /var/lib/pgadmin/storage/admin_admin.com/;
+  #     chmod 600 /var/lib/pgadmin/storage/admin_admin.com/pgpass;
+  #     /entrypoint.sh
+  #     "
 
   ## KEYCLOAK
   keycloak:
@@ -46,6 +46,7 @@ services:
       KEYCLOAK_IMPORT: /tmp/realm.json
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: root
+      DB_VENDOR: H2
     volumes:
       - ./keycloak_realm.json:/tmp/realm.json
     ports:
