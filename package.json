@@ -16,7 +16,10 @@
     "e2e:ci": "ng run blueprint-angular:cypress-run:production",
     "e2e:local": "ng run blueprint-angular:cypress-open",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "devenv:setup": "docker-compose -f dev/docker-compose.yml --profile dev up -d",
+    "devenv:setup-ci": "docker-compose -f dev/docker-compose.yml --profile ci up -d",
+    "devenv:teardown": "docker-compose -f dev/docker-compose.yml down"
   },
   "engines": {
     "node": "^16.13.0",
@@ -30,9 +33,12 @@
     "@angular/compiler": "14.0.3",
     "@angular/core": "14.0.3",
     "@angular/forms": "14.0.3",
+    "@angular/material": "14.0.3",
     "@angular/platform-browser": "14.0.3",
     "@angular/platform-browser-dynamic": "14.0.3",
     "@angular/router": "14.0.3",
+    "keycloak-angular": "10.0.1",
+    "keycloak-js": "18.0.1",
     "rxjs": "7.5.5",
     "tslib": "2.4.0",
     "zone.js": "0.11.6"

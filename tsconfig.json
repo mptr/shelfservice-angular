@@ -21,6 +21,8 @@
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true
 	},
+	"include": ["src/**/*"],
+	"exclude": ["src/**/*.spec.ts"],
 	"angularCompilerOptions": {
 		"enableI18nLegacyMessageIdFormat": false,
 		"strictInjectionParameters": true,

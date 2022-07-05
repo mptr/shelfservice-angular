@@ -16,6 +16,7 @@ specifiers:
   '@angular/compiler-cli': 14.0.3
   '@angular/core': 14.0.3
   '@angular/forms': 14.0.3
+  '@angular/material': 14.0.3
   '@angular/platform-browser': 14.0.3
   '@angular/platform-browser-dynamic': 14.0.3
   '@angular/router': 14.0.3
@@ -34,6 +35,8 @@ specifiers:
   husky: 8.0.1
   jest: 28.1.1
   jest-junit: 13.2.0
+  keycloak-angular: 10.0.1
+  keycloak-js: 18.0.1
   lint-staged: 13.0.2
   prettier: 2.7.1
   rxjs: 7.5.5
@@ -50,9 +53,12 @@ dependencies:
   '@angular/compiler': 14.0.3_@angular+core@14.0.3
   '@angular/core': 14.0.3_rxjs@7.5.5+zone.js@0.11.6
   '@angular/forms': 14.0.3_vrcy5tkw7nvoiq5islshxpfw4m
+  '@angular/material': 14.0.3_cdkxsvnumyjgs5n6mmnorsdyii
   '@angular/platform-browser': 14.0.3_5axzenb7oyll2rf2x4hbd2xcgq
   '@angular/platform-browser-dynamic': 14.0.3_y345ctpye26r3jjhattl22t2tm
   '@angular/router': 14.0.3_vrcy5tkw7nvoiq5islshxpfw4m
+  keycloak-angular: 10.0.1_fjw7e34xrc6m5ppjewrjagcn5e
+  keycloak-js: 18.0.1
   rxjs: 7.5.5
   tslib: 2.4.0
   zone.js: 0.11.6
@@ -534,6 +540,27 @@ packages:
     dependencies:
       '@angular/common': 14.0.3_nqboawvwyzlh7es3m6c2m2yguq
       '@angular/core': 14.0.3_rxjs@7.5.5+zone.js@0.11.6
+      '@angular/platform-browser': 14.0.3_5axzenb7oyll2rf2x4hbd2xcgq
+      rxjs: 7.5.5
+      tslib: 2.4.0
+    dev: false
+
+  /@angular/material/14.0.3_cdkxsvnumyjgs5n6mmnorsdyii:
+    resolution: {integrity: sha512-xtYV5ygkfl/6JUaI99NeD1AdM4WcCrCOsx/5IR3ZohUQ1q9vPPvcArWa9QAa1GgU7HNhkgXU90yELwsOtSTc4w==}
+    peerDependencies:
+      '@angular/animations': ^14.0.0 || ^15.0.0
+      '@angular/cdk': 14.0.3
+      '@angular/common': ^14.0.0 || ^15.0.0
+      '@angular/core': ^14.0.0 || ^15.0.0
+      '@angular/forms': ^14.0.0 || ^15.0.0
+      '@angular/platform-browser': ^14.0.0 || ^15.0.0
+      rxjs: ^6.5.3 || ^7.4.0
+    dependencies:
+      '@angular/animations': 14.0.3_@angular+core@14.0.3
+      '@angular/cdk': 14.0.3_ozhnzrg7nuo2sgvf62tu44bode
+      '@angular/common': 14.0.3_nqboawvwyzlh7es3m6c2m2yguq
+      '@angular/core': 14.0.3_rxjs@7.5.5+zone.js@0.11.6
+      '@angular/forms': 14.0.3_vrcy5tkw7nvoiq5islshxpfw4m
       '@angular/platform-browser': 14.0.3_5axzenb7oyll2rf2x4hbd2xcgq
       rxjs: 7.5.5
       tslib: 2.4.0
@@ -4001,7 +4028,6 @@ packages:
 
   /base64-js/1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
-    dev: true
 
   /batch/0.6.1:
     resolution: {integrity: sha512-x+VAiMRL6UPkx+kudNvxTl6hB2XNNCG2r+7wixVfIYwu/2HKRXimwQyaumLjMveWvT2Hkd/cAJw+QBMfJ/EKVw==}
@@ -7685,6 +7711,10 @@ packages:
       - ts-node
     dev: true
 
+  /js-sha256/0.9.0:
+    resolution: {integrity: sha512-sga3MHh9sgQN2+pJ9VYZ+1LPwXOxuBJBA5nrR5/ofPfuiJBE2hnjsaN8se8JznOmGLN2p49Pe5U/ttafcs/apA==}
+    dev: false
+
   /js-tokens/4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
     dev: true
@@ -7834,6 +7864,28 @@ packages:
     dependencies:
       source-map-support: 0.5.21
     dev: true
+
+  /keycloak-angular/10.0.1_fjw7e34xrc6m5ppjewrjagcn5e:
+    resolution: {integrity: sha512-8no08at+4OudltjaxALuKgBKXDiTjr5lTIb7RyPjMtiqewxu9oRPQS2ShWOZoj9gK8yRXrDfkPv3Mm4PTvcqmQ==}
+    peerDependencies:
+      '@angular/common': ^13
+      '@angular/core': ^13
+      '@angular/router': ^13
+      keycloak-js: ^18
+    dependencies:
+      '@angular/common': 14.0.3_nqboawvwyzlh7es3m6c2m2yguq
+      '@angular/core': 14.0.3_rxjs@7.5.5+zone.js@0.11.6
+      '@angular/router': 14.0.3_vrcy5tkw7nvoiq5islshxpfw4m
+      keycloak-js: 18.0.1
+      tslib: 2.4.0
+    dev: false
+
+  /keycloak-js/18.0.1:
+    resolution: {integrity: sha512-IRXToYpbIrkyfLeNNJly2OjUCf11ncx2Sdsg257NVDwjOYE923osu47w8pfxEVWpTaS14/Y2QjbTHciuBK0RBQ==}
+    dependencies:
+      base64-js: 1.5.1
+      js-sha256: 0.9.0
+    dev: false
 
   /kind-of/6.0.3:
     resolution: {integrity: sha512-dcS1ul+9tmeD95T+x28/ehLgd9mENa3LsvDTtzm3vyBEO7RPptvAD+t44WVXaUjTBRcrpFeFlC8WCruUR456hw==}

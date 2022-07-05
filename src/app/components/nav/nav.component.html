@@ -1,0 +1,22 @@
+<mat-toolbar>
+	<button mat-icon-button (click)="toggleSide.emit()">
+		<mat-icon *ngIf="!sidebarState">menu</mat-icon>
+		<mat-icon *ngIf="sidebarState">arrow_back</mat-icon>
+	</button>
+	<span class="title">ShelfService</span>
+	<span class="spacer"></span>
+	<button mat-flat-button *ngIf="!loginStatus" (click)="authService.login()">
+		Login
+		<mat-icon>login</mat-icon>
+	</button>
+	<button mat-flat-button *ngIf="loginStatus" [matMenuTriggerFor]="personalMenu">
+		{{ usernameDisplay }}
+		&nbsp;<mat-icon>person</mat-icon>
+	</button>
+	<mat-menu #personalMenu="matMenu" xPosition="before">
+		<button mat-menu-item (click)="authService.logout()">
+			<mat-icon>logout</mat-icon>
+			<span>Abmelden</span>
+		</button>
+	</mat-menu>
+</mat-toolbar>
