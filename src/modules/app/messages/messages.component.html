@@ -1,0 +1,11 @@
+<div @list id="msgList">
+	<mat-card @item *ngFor="let m of messageService.messages" [class]="m.kind">
+		<div>
+			<mat-card-title>{{ m.title }}</mat-card-title>
+			<mat-card-subtitle [innerHTML]="m.desc"></mat-card-subtitle>
+		</div>
+		<button mat-icon-button (click)="messageService.dismiss(m)">
+			<mat-icon>close</mat-icon>
+		</button>
+	</mat-card>
+</div>

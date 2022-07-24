@@ -1,0 +1,16 @@
+.grid {
+	margin: 5em;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, 300px);
+	justify-content: center;
+	align-items: end;
+	grid-auto-rows: 200px;
+	gap: 2em;
+	padding: 2em;
+	.createButton {
+		height: 10em;
+		mat-icon {
+			transform: scale(2.2);
+		}
+	}
+}

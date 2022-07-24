@@ -1,0 +1,11 @@
+mat-card {
+	height: fit-content;
+}
+::ng-deep {
+	.mat-card-header {
+		gap: 16px;
+	}
+	.mat-card-header-text {
+		margin: 0 !important;
+	}
+}

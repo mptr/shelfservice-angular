@@ -7,6 +7,12 @@ app-footer {
 app-nav {
 	height: $navHeight;
 }
+app-messages {
+	position: absolute;
+	right: 1em;
+	bottom: calc($footerHeight + 1em);
+	z-index: 1;
+}
 app-footer {
 	height: $footerHeight;
 }

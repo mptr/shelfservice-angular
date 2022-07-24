@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from 'src/modules/auth/auth.service';
 
 @Component({
 	selector: 'app-nav',

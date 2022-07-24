@@ -1,0 +1,6 @@
+<div class="grid">
+	<app-shelf-item *ngFor="let wf of workflows" [workflow]="wf"> </app-shelf-item>
+	<button mat-raised-button class="createButton" color="primary" (click)="createNewWorkflow()">
+		<mat-icon>add</mat-icon>
+	</button>
+</div>

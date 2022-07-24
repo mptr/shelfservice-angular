@@ -1,0 +1,23 @@
+<mat-card>
+	<mat-card-header>
+		<div *ngIf="workflow.icon" mat-card-avatar [attr.style]="workflow.iconStyle()"></div>
+		<mat-card-title>{{ workflow.name }}</mat-card-title>
+		<mat-card-subtitle>von: {{ workflow.owners[0] || 'unbekannt' }}</mat-card-subtitle>
+	</mat-card-header>
+	<mat-card-content>
+		<p>{{ workflow.description }}</p>
+	</mat-card-content>
+	<mat-card-actions align="end">
+		<button mat-button>
+			<mat-icon class="material-icons-outlined">info</mat-icon>
+			Details
+		</button>
+		<button *ngIf="workflow.hasParams" mat-flat-button color="primary">
+			<mat-icon>edit_note</mat-icon>
+		</button>
+		<button *ngIf="!workflow.hasParams" mat-flat-button color="primary">
+			<mat-icon>play_arrow</mat-icon>
+			Starten
+		</button>
+	</mat-card-actions>
+</mat-card>
