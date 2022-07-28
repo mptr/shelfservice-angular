@@ -1,2 +1,66 @@
-<p>workflow-edit works!</p>
-<p>{{ workflow | json }}</p>
+<h2>Workflow bearbeiten</h2>
+<!-- https://material.angular.io/components/stepper/overview -->
+<form [formGroup]="fg" (ngSubmit)="save()">
+	<mat-stepper orientation="vertical" linear #stepper>
+		<mat-step label="Workflow-Typ">
+			<div>
+				<button mat-stroked-button (click)="fg.controls['kind'].setValue('kubernetes')">Kubernetes</button>
+				<button mat-stroked-button (click)="fg.controls['kind'].setValue('webworker')">WebWorker</button>
+			</div>
+			<div>
+				<button mat-button matStepperNext type="button">Next</button>
+			</div>
+		</mat-step>
+		<mat-step label="Metadaten">
+			<mat-form-field appearance="fill">
+				<mat-label>Name</mat-label>
+				<input matInput placeholder="Last name, First name" formControlName="name" required />
+			</mat-form-field>
+			<mat-form-field appearance="fill">
+				<mat-label>Beschreibung</mat-label>
+				<input matInput placeholder="Last name, First name" formControlName="description" required />
+			</mat-form-field>
+			<mat-form-field appearance="fill">
+				<mat-label>Icon</mat-label>
+				<input matInput placeholder="Last name, First name" formControlName="icon" required />
+			</mat-form-field>
+			<div>
+				<button mat-button matStepperPrevious type="button">Back</button>
+				<button mat-button matStepperNext type="button">Next</button>
+			</div>
+		</mat-step>
+		<mat-step label="Konfiguration">
+			<mat-form-field appearance="fill">
+				<mat-label>Image</mat-label>
+				<input matInput placeholder="docker-release..." formControlName="image" required />
+			</mat-form-field>
+			<div class="command" formArrayName="command">
+				<mat-form-field appearance="fill">
+					<input matInput placeholder="/bin/sh" form="image" required />
+				</mat-form-field>
+			</div>
+			<div>
+				<button mat-button matStepperPrevious type="button">Back</button>
+			</div>
+		</mat-step>
+		<mat-step label="Parameterisierung">
+			<mat-form-field appearance="fill">
+				<mat-label>Name</mat-label>
+				<input matInput placeholder="Last name, First name" formControlName="description" required />
+			</mat-form-field>
+			<div>
+				<button mat-button matStepperPrevious type="button">Back</button>
+			</div>
+		</mat-step>
+		<mat-step label="Abschließen">
+			<mat-form-field appearance="fill">
+				<mat-label>Name</mat-label>
+				<input matInput placeholder="Last name, First name" formControlName="description" required />
+			</mat-form-field>
+			<div>
+				<button mat-button matStepperPrevious type="button">Back</button>
+			</div>
+		</mat-step>
+	</mat-stepper>
+	<input type="submit" class="btn btn-primary" value="Speichern" />
+</form>
