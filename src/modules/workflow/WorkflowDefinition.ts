@@ -15,7 +15,7 @@ export class WorkflowDefinitionList {
 }
 
 export class WorkflowDefinition extends WorkflowDefinitionList {
-	constructor(values: Partial<WorkflowDefinition>) {
+	constructor(values?: Partial<WorkflowDefinition>) {
 		super();
 		Object.assign(this, values);
 	}
@@ -27,7 +27,7 @@ export class WorkflowDefinition extends WorkflowDefinitionList {
 }
 
 export class KubernetesWorkflowDefinition extends WorkflowDefinition {
-	constructor(values: Partial<KubernetesWorkflowDefinition>) {
+	constructor(values?: Partial<KubernetesWorkflowDefinition>) {
 		super(values);
 		Object.assign(this, values);
 	}
