@@ -5,7 +5,6 @@ import { Message } from '../message/Message';
 import { environment } from 'src/environments/environment';
 import { MessageService } from '../message/message.service';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Constructable<T> = new () => T;
 
 type id = string | number;
@@ -80,27 +79,28 @@ class RestClient<T, P = never> {
 		const ctor = this.ctor;
 		const observer = handler().pipe(
 			catchError((error: HttpErrorResponse) => this.handleError(error)),
-			map(x => {
-				if (Array.isArray(x)) return RestClient.mapArray(x, ctor);
-				else return RestClient.mapItem(x, ctor);
-			}),
+			map(x => RestClient.instanciate(x, ctor)),
 			tap(x => console.log('RESPONSE', x)),
 		);
 		return lastValueFrom(observer);
 	}
 
-	private static mapArray<K>(x: K[], ctor: Constructable<K>) {
-		return x.map(y => this.mapItem(y, ctor));
-	}
-
-	private static mapItem<K>(x: K, ctor: Constructable<K>) {
-		return RestClient.instanciate(x, ctor);
-	}
-
-	private static instanciate<T>(x: T, ctor: Constructable<T>) {
-		const instance = new ctor();
-		Object.assign(instance, x);
-		return instance;
+	private static instanciate<T>(x: T, ctor: Constructable<T>): T;
+	private static instanciate<T>(x: T[], ctor: Constructable<T>): T[];
+	private static instanciate<T>(x: T | T[], ctor: Constructable<T>) {
+		let result;
+		if (Array.isArray(x)) {
+			result = x.map(elm => {
+				const instance = new ctor();
+				Object.assign(instance, elm);
+				return instance;
+			});
+		} else {
+			result = new ctor();
+			Object.assign(result, x);
+			return result;
+		}
+		return result;
 	}
 
 	private handleError(error: HttpErrorResponse) {

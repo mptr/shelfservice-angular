@@ -1,11 +1,11 @@
 <h2>Workflow bearbeiten</h2>
 <!-- https://material.angular.io/components/stepper/overview -->
-<form [formGroup]="fg" (ngSubmit)="save()">
+<form *ngIf="wf" [formGroup]="wf.formGroup" (ngSubmit)="save()">
 	<mat-stepper orientation="vertical" linear #stepper>
 		<mat-step label="Workflow-Typ">
 			<div>
-				<button mat-stroked-button (click)="fg.controls['kind'].setValue('kubernetes')">Kubernetes</button>
-				<button mat-stroked-button (click)="fg.controls['kind'].setValue('webworker')">WebWorker</button>
+				<button mat-stroked-button (click)="kindControl.setValue('kubernetes')">Kubernetes</button>
+				<button mat-stroked-button (click)="kindControl.setValue('webworker')">WebWorker</button>
 			</div>
 			<div>
 				<button mat-button matStepperNext type="button">Next</button>
