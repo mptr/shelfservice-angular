@@ -1,66 +1,97 @@
 <h2>Workflow bearbeiten</h2>
 <!-- https://material.angular.io/components/stepper/overview -->
-<form *ngIf="wf" [formGroup]="wf.formGroup" (ngSubmit)="save()">
-	<mat-stepper orientation="vertical" linear #stepper>
-		<mat-step label="Workflow-Typ">
-			<div>
-				<button mat-stroked-button (click)="kindControl.setValue('kubernetes')">Kubernetes</button>
-				<button mat-stroked-button (click)="kindControl.setValue('webworker')">WebWorker</button>
-			</div>
-			<div>
-				<button mat-button matStepperNext type="button">Next</button>
-			</div>
-		</mat-step>
+<mat-stepper orientation="vertical" linear #stepper>
+	<mat-step label="Workflow-Typ">
+		<div>
+			<button
+				mat-stroked-button
+				[ngClass]="{ selected: kindControl.value === 'kubernetes' }"
+				(click)="kindControl.setValue('kubernetes')"
+			>
+				Kubernetes
+			</button>
+			<button
+				mat-stroked-button
+				[ngClass]="{ selected: kindControl.value === 'webworker' }"
+				(click)="kindControl.setValue('webworker')"
+			>
+				WebWorker
+			</button>
+		</div>
+		<div>
+			<button mat-button matStepperNext>Next</button>
+		</div>
+	</mat-step>
+	<ng-container *ngIf="wf" [formGroup]="wf.formGroup">
 		<mat-step label="Metadaten">
 			<mat-form-field appearance="fill">
 				<mat-label>Name</mat-label>
-				<input matInput placeholder="Last name, First name" formControlName="name" required />
+				<input matInput formControlName="name" required />
 			</mat-form-field>
 			<mat-form-field appearance="fill">
 				<mat-label>Beschreibung</mat-label>
-				<input matInput placeholder="Last name, First name" formControlName="description" required />
-			</mat-form-field>
-			<mat-form-field appearance="fill">
-				<mat-label>Icon</mat-label>
-				<input matInput placeholder="Last name, First name" formControlName="icon" required />
+				<textarea matInput placeholder="Dieser Workflow kann..." formControlName="description" required></textarea>
 			</mat-form-field>
 			<div>
-				<button mat-button matStepperPrevious type="button">Back</button>
-				<button mat-button matStepperNext type="button">Next</button>
+				<button mat-raised-button color="primary" (click)="uploadFile.click()">Icon auswählen</button>
+				<!-- <input #uploadFile (change)="upload($event)" type='file' formControlName="icon" style="display:none"/>  -->
+				<input #uploadFile type="file" formControlName="icon" style="display: none" />
+			</div>
+			<div>
+				<button mat-button matStepperPrevious>Back</button>
+				<button mat-button matStepperNext>Next</button>
 			</div>
 		</mat-step>
-		<mat-step label="Konfiguration">
+		<mat-step label="Konfiguration" *ngIf="isKubernetesWfDef(this.wf)">
 			<mat-form-field appearance="fill">
 				<mat-label>Image</mat-label>
-				<input matInput placeholder="docker-release..." formControlName="image" required />
+				<input matInput placeholder="docker-release..." formControlName="image" />
+				<mat-hint>Docker-Tag des Images, welches für die Job-Ausführung verwendet werden soll</mat-hint>
 			</mat-form-field>
-			<div class="command" formArrayName="command">
-				<mat-form-field appearance="fill">
-					<input matInput placeholder="/bin/sh" form="image" required />
-				</mat-form-field>
-			</div>
+			<mat-form-field appearance="fill">
+				<mat-label>Startbefehl</mat-label>
+				<input matInput placeholder="/bin/sh" formControlName="command" />
+			</mat-form-field>
 			<div>
-				<button mat-button matStepperPrevious type="button">Back</button>
+				<button mat-button matStepperPrevious>Back</button>
+				<button mat-button matStepperNext>Next</button>
 			</div>
 		</mat-step>
 		<mat-step label="Parameterisierung">
-			<mat-form-field appearance="fill">
-				<mat-label>Name</mat-label>
-				<input matInput placeholder="Last name, First name" formControlName="description" required />
-			</mat-form-field>
+			<div
+				class="paramItem"
+				*ngFor="let cmdItem of wf.parameterFieldsForm.controls; let i = index"
+				[formGroup]="cmdItem"
+			>
+				<mat-form-field appearance="fill">
+					<mat-label>Name</mat-label>
+					<input matInput formControlName="name" required />
+					<mat-hint>Variablenname des Parameters</mat-hint>
+				</mat-form-field>
+				<mat-form-field appearance="fill">
+					<mat-label>Typ</mat-label>
+					<input matInput formControlName="name" required />
+					<mat-hint>Datentyp des Parameters</mat-hint>
+				</mat-form-field>
+				<button mat-icon-button (click)="wf.parameterFieldsForm.removeAt(i)">
+					<mat-icon>delete</mat-icon>
+				</button>
+			</div>
+			<button mat-button (click)="wf.addParameterFieldForm()"><mat-icon>add</mat-icon> Parameter hinzufügen</button>
 			<div>
-				<button mat-button matStepperPrevious type="button">Back</button>
+				<button mat-button matStepperPrevious>Back</button>
+				<button mat-button matStepperNext>Next</button>
 			</div>
 		</mat-step>
 		<mat-step label="Abschließen">
-			<mat-form-field appearance="fill">
-				<mat-label>Name</mat-label>
-				<input matInput placeholder="Last name, First name" formControlName="description" required />
-			</mat-form-field>
+			<p>
+				Übersicht: ....
+				<!-- TODO -->
+			</p>
 			<div>
-				<button mat-button matStepperPrevious type="button">Back</button>
+				<button mat-button matStepperPrevious>Back</button>
+				<button mat-flat-button color="primary"><mat-icon>save</mat-icon> Save</button>
 			</div>
 		</mat-step>
-	</mat-stepper>
-	<input type="submit" class="btn btn-primary" value="Speichern" />
-</form>
+	</ng-container>
+</mat-stepper>

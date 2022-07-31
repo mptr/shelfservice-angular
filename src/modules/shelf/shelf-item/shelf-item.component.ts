@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { WorkflowDefinition } from '../../workflow/WorkflowDefinition';
+import { WorkflowDefinitionList } from '../../workflow/WorkflowDefinition';
 
 @Component({
 	selector: 'app-shelf-item',
@@ -8,5 +8,5 @@ import { WorkflowDefinition } from '../../workflow/WorkflowDefinition';
 })
 export class ShelfItemComponent {
 	@Input()
-	workflow!: WorkflowDefinition;
+	workflow!: WorkflowDefinitionList;
 }

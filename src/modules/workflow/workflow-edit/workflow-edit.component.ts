@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RestService } from 'src/services/rest/rest.service';
-import { KubernetesWorkflowDefinition, WorkflowDefinition } from '../WorkflowDefinition';
+import { WorkflowLabel } from 'src/util/workflowLabels';
+import { KubernetesWorkflowDefinition, WebWorkerWorkflowDefinition, WorkflowDefinition } from '../WorkflowDefinition';
 
 @Component({
 	selector: 'app-workflow-edit',
@@ -12,7 +13,7 @@ import { KubernetesWorkflowDefinition, WorkflowDefinition } from '../WorkflowDef
 export class WorkflowEditComponent implements OnInit {
 	editId?: string;
 
-	kindControl = new FormControl<'kubernetes' | 'webworker' | undefined>(undefined, Validators.required);
+	kindControl = new FormControl<WorkflowLabel | undefined>(undefined, Validators.required);
 
 	wf?: WorkflowDefinition;
 
@@ -35,10 +36,18 @@ export class WorkflowEditComponent implements OnInit {
 		});
 	}
 
-	private setWf(wf?: WorkflowDefinition, kind?: 'kubernetes' | 'webworker' | null) {
+	private setWf(wf?: WorkflowDefinition, kind?: WorkflowLabel | null) {
 		if (kind === 'kubernetes') this.wf = new KubernetesWorkflowDefinition(wf);
-		// if (kind === 'webworker') this.wf = new WebWorkerWorkflowDefinition(wf);
+		else if (kind === 'webworker') this.wf = new WebWorkerWorkflowDefinition(wf);
 		else this.wf = undefined;
+	}
+
+	isKubernetesWfDef(wf: WorkflowDefinition): wf is KubernetesWorkflowDefinition {
+		return wf.kind === 'kubernetes';
+	}
+
+	isWebWorkerWfDef(wf: WorkflowDefinition): wf is WebWorkerWorkflowDefinition {
+		return wf.kind === 'webworker';
 	}
 
 	save() {

@@ -1,9 +1,10 @@
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { WorkflowLabel } from 'src/util/workflowLabels';
 import { Parameter } from './Parameter';
 
 export class WorkflowDefinitionList {
 	id: string | null = null;
-	kind: 'kubernetes' | 'webworker' | null = null;
+	kind: WorkflowLabel | null = null;
 	name: string | null = null;
 	description: string | null = null;
 	icon: string | null = null;
@@ -25,10 +26,25 @@ export class WorkflowDefinition extends WorkflowDefinitionList {
 			icon: new FormControl(this.icon),
 			parameterFields: new FormArray([]),
 		});
+		this.kind = null;
 	}
 	parameterFields: Parameter[] = [];
 
 	formGroup = new FormGroup({});
+
+	get parameterFieldsForm(): FormArray<FormGroup> {
+		return this.formGroup.get('parameterFields') as unknown as FormArray<
+			FormGroup<{
+				name: FormControl<string>;
+				type: FormControl<string>;
+			}>
+		>;
+	}
+	addParameterFieldForm() {
+		const p = new Parameter();
+		this.parameterFields.push(p);
+		this.parameterFieldsForm.push(p.formGroup);
+	}
 
 	accept(p: Partial<WorkflowDefinition>) {
 		Object.assign(this, p);
@@ -56,9 +72,28 @@ export class KubernetesWorkflowDefinition extends WorkflowDefinition {
 			image: new FormControl(this.image, Validators.required),
 			command: new FormControl(this.command, Validators.required),
 		});
+		this.kind = 'kubernetes';
 	}
 	image!: string;
-	command: string[] = [];
+	command!: string;
+
+	override accept(p: Partial<KubernetesWorkflowDefinition>) {
+		super.accept(p);
+		Object.assign(this, p);
+		this.formGroup.patchValue(this);
+	}
+}
+
+export class WebWorkerWorkflowDefinition extends WorkflowDefinition {
+	constructor(values?: Partial<WebWorkerWorkflowDefinition>) {
+		super(values);
+		Object.assign(this, values);
+		this.addControls({
+			artifactUrl: new FormControl(this.artifactUrl, Validators.required),
+		});
+		this.kind = 'webworker';
+	}
+	artifactUrl!: string;
 
 	override accept(p: Partial<KubernetesWorkflowDefinition>) {
 		super.accept(p);

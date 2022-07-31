@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RestService } from 'src/services/rest/rest.service';
-import { WorkflowDefinition } from '../../workflow/WorkflowDefinition';
+import { WorkflowDefinitionList } from '../../workflow/WorkflowDefinition';
 
 @Component({
 	selector: 'app-shelf-list',
@@ -13,15 +13,15 @@ export class ShelfListComponent implements OnInit {
 
 	ngOnInit(): void {
 		this.rest.new
-			.navigate<WorkflowDefinition[]>('workflows')
-			.get()
-			.subscribe(wf => {
-				console.log(wf);
-				// this.workflows = wf;
+			.navigate('workflows', WorkflowDefinitionList)
+			.getAll()
+			.then(wfs => {
+				console.log(wfs);
+				this.workflows = wfs;
 			});
 	}
 
-	workflows: WorkflowDefinition[] = [];
+	workflows: WorkflowDefinitionList[] = [];
 
 	createNewWorkflow() {
 		this.router.navigate(['shelf', 'new']);
