@@ -1,8 +1,15 @@
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
+export enum ParameterType {
+	STRING = 'string',
+	NUMBER = 'number',
+	BOOLEAN = 'boolean',
+	DATE = 'date',
+}
+
 export class Parameter {
 	name!: string;
-	kind!: 'string' | 'number' | 'boolean' | 'date';
+	kind!: ParameterType;
 
 	get formGroup() {
 		return new FormGroup({

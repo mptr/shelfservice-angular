@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RestService } from 'src/services/rest/rest.service';
+import { enumToString } from 'src/util/enumToString';
 import { WorkflowLabel } from 'src/util/workflowLabels';
+import { ParameterType } from '../Parameter';
 import { KubernetesWorkflowDefinition, WebWorkerWorkflowDefinition, WorkflowDefinition } from '../WorkflowDefinition';
 
 @Component({
@@ -18,6 +20,8 @@ export class WorkflowEditComponent implements OnInit {
 	wf?: WorkflowDefinition;
 
 	constructor(private readonly activatedRoute: ActivatedRoute, private readonly rest: RestService) {}
+
+	types = enumToString(ParameterType);
 
 	ngOnInit(): void {
 		this.editId = this.activatedRoute.snapshot.url[0].path;

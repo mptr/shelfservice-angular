@@ -1,4 +1,5 @@
 import { AbstractControl, FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
+import { User } from 'src/util/User.entity';
 import { WorkflowLabel } from 'src/util/workflowLabels';
 import { Parameter } from './Parameter';
 
@@ -8,7 +9,7 @@ export class WorkflowDefinitionList {
 	name: string | null = null;
 	description: string | null = null;
 	icon: string | null = null;
-	owners: unknown[] = [];
+	owners: User[] = [];
 	hasParams: boolean | null = null;
 
 	iconStyle() {

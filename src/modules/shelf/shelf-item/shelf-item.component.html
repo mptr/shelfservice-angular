@@ -2,7 +2,7 @@
 	<mat-card-header>
 		<div *ngIf="workflow.icon" mat-card-avatar [attr.style]="workflow.iconStyle()"></div>
 		<mat-card-title>{{ workflow.name }}</mat-card-title>
-		<mat-card-subtitle>von: {{ workflow.owners[0] || 'unbekannt' }}</mat-card-subtitle>
+		<mat-card-subtitle>von: {{ ownerNames || 'unbekannt' }}</mat-card-subtitle>
 	</mat-card-header>
 	<mat-card-content>
 		<p>{{ workflow.description }}</p>

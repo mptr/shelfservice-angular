@@ -34,7 +34,6 @@
 			</mat-form-field>
 			<div>
 				<button mat-raised-button color="primary" (click)="uploadFile.click()">Icon auswählen</button>
-				<!-- <input #uploadFile (change)="upload($event)" type='file' formControlName="icon" style="display:none"/>  -->
 				<input #uploadFile type="file" formControlName="icon" style="display: none" />
 			</div>
 			<div>
@@ -70,7 +69,9 @@
 				</mat-form-field>
 				<mat-form-field appearance="fill">
 					<mat-label>Typ</mat-label>
-					<input matInput formControlName="name" required />
+					<mat-select formControlName="name">
+						<mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
+					</mat-select>
 					<mat-hint>Datentyp des Parameters</mat-hint>
 				</mat-form-field>
 				<button mat-icon-button (click)="wf.parameterFieldsForm.removeAt(i)">
@@ -90,7 +91,7 @@
 			</p>
 			<div>
 				<button mat-button matStepperPrevious>Back</button>
-				<button mat-flat-button color="primary"><mat-icon>save</mat-icon> Save</button>
+				<button mat-flat-button color="primary" (click)="save()"><mat-icon>save</mat-icon> Save</button>
 			</div>
 		</mat-step>
 	</ng-container>
