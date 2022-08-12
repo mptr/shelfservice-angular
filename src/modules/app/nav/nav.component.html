@@ -3,7 +3,7 @@
 		<mat-icon *ngIf="!sidebarState">menu</mat-icon>
 		<mat-icon *ngIf="sidebarState">arrow_back</mat-icon>
 	</button>
-	<span class="title">ShelfService</span>
+	<span class="title" [routerLink]="['/']">ShelfService</span>
 	<span class="spacer"></span>
 	<button mat-flat-button *ngIf="!loginStatus" (click)="authService.login()">
 		Login

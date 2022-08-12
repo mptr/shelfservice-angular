@@ -75,14 +75,19 @@ class RestClient<T, P = never> {
 	private intercept(handler: () => Observable<T[]>): Promise<T[]>;
 	private intercept(handler: () => Observable<T>): Promise<T>;
 	private intercept(handler: () => Observable<T | T[]>): Promise<T | T[]> {
-		if (!this.ctor) throw new Error('Cannot perform REST-Action on non-entity RestClient');
-		const ctor = this.ctor;
 		const observer = handler().pipe(
 			catchError((error: HttpErrorResponse) => this.handleError(error)),
-			map(x => RestClient.instanciate(x, ctor)),
+			map(x => {
+				if (!this.ctor) return x;
+				else return RestClient.instanciate(x, this.ctor);
+			}),
 			tap(x => console.log('RESPONSE', x)),
 		);
-		return lastValueFrom(observer);
+		try {
+			return lastValueFrom(observer);
+		} catch (e) {
+			return Promise.reject(e);
+		}
 	}
 
 	private static instanciate<T>(x: T, ctor: Constructable<T>): T;
@@ -112,7 +117,7 @@ class RestClient<T, P = never> {
 			this.msgService.push(
 				new Message(
 					`Serverfehler`,
-					error.error.error + '<br>' + error.error.exception.replace('<', '&lt;').replace('>', '&gt;'),
+					error.error.statusCode + '<br>' + error.error.message.replace('<', '&lt;').replace('>', '&gt;'),
 					'error',
 				),
 			);
@@ -120,8 +125,8 @@ class RestClient<T, P = never> {
 		else
 			this.msgService.push(
 				new Message(
-					`Warnung: Unbekannter Fehler`,
-					error.error.error + '<br>' + error.error.exception.replace('<', '&lt;').replace('>', '&gt;'),
+					`Unbekannter Fehler`,
+					error.error.statusCode + '<br>' + error.error.message.replace('<', '&lt;').replace('>', '&gt;'),
 					'warning',
 				),
 			);

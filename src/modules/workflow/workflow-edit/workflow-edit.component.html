@@ -1,98 +1,235 @@
 <h2>Workflow bearbeiten</h2>
-<!-- https://material.angular.io/components/stepper/overview -->
-<mat-stepper orientation="vertical" linear #stepper>
-	<mat-step label="Workflow-Typ">
-		<div>
-			<button
-				mat-stroked-button
-				[ngClass]="{ selected: kindControl.value === 'kubernetes' }"
-				(click)="kindControl.setValue('kubernetes')"
-			>
-				Kubernetes
-			</button>
-			<button
-				mat-stroked-button
-				[ngClass]="{ selected: kindControl.value === 'webworker' }"
-				(click)="kindControl.setValue('webworker')"
-			>
-				WebWorker
-			</button>
-		</div>
-		<div>
-			<button mat-button matStepperNext>Next</button>
-		</div>
-	</mat-step>
-	<ng-container *ngIf="wf" [formGroup]="wf.formGroup">
-		<mat-step label="Metadaten">
-			<mat-form-field appearance="fill">
-				<mat-label>Name</mat-label>
-				<input matInput formControlName="name" required />
-			</mat-form-field>
-			<mat-form-field appearance="fill">
-				<mat-label>Beschreibung</mat-label>
-				<textarea matInput placeholder="Dieser Workflow kann..." formControlName="description" required></textarea>
-			</mat-form-field>
-			<div>
-				<button mat-raised-button color="primary" (click)="uploadFile.click()">Icon auswählen</button>
-				<input #uploadFile type="file" formControlName="icon" style="display: none" />
+<mat-card>
+	<mat-stepper orientation="vertical" #stepper>
+		<mat-step label="Workflow-Typ" state="kind">
+			<div class="formStep">
+				<div class="kindSelect full">
+					<button
+						mat-stroked-button
+						[ngClass]="{ selected: kindControl.value === 'kubernetes' }"
+						(click)="kindControl.setValue('kubernetes')"
+					>
+						Kubernetes
+					</button>
+					<button
+						mat-stroked-button
+						[ngClass]="{ selected: kindControl.value === 'webworker' }"
+						(click)="kindControl.setValue('webworker')"
+					>
+						WebWorker
+					</button>
+				</div>
 			</div>
-			<div>
-				<button mat-button matStepperPrevious>Back</button>
-				<button mat-button matStepperNext>Next</button>
-			</div>
-		</mat-step>
-		<mat-step label="Konfiguration" *ngIf="isKubernetesWfDef(this.wf)">
-			<mat-form-field appearance="fill">
-				<mat-label>Image</mat-label>
-				<input matInput placeholder="docker-release..." formControlName="image" />
-				<mat-hint>Docker-Tag des Images, welches für die Job-Ausführung verwendet werden soll</mat-hint>
-			</mat-form-field>
-			<mat-form-field appearance="fill">
-				<mat-label>Startbefehl</mat-label>
-				<input matInput placeholder="/bin/sh" formControlName="command" />
-			</mat-form-field>
-			<div>
-				<button mat-button matStepperPrevious>Back</button>
-				<button mat-button matStepperNext>Next</button>
-			</div>
-		</mat-step>
-		<mat-step label="Parameterisierung">
-			<div
-				class="paramItem"
-				*ngFor="let cmdItem of wf.parameterFieldsForm.controls; let i = index"
-				[formGroup]="cmdItem"
-			>
-				<mat-form-field appearance="fill">
-					<mat-label>Name</mat-label>
-					<input matInput formControlName="name" required />
-					<mat-hint>Variablenname des Parameters</mat-hint>
-				</mat-form-field>
-				<mat-form-field appearance="fill">
-					<mat-label>Typ</mat-label>
-					<mat-select formControlName="name">
-						<mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
-					</mat-select>
-					<mat-hint>Datentyp des Parameters</mat-hint>
-				</mat-form-field>
-				<button mat-icon-button (click)="wf.parameterFieldsForm.removeAt(i)">
-					<mat-icon>delete</mat-icon>
+			<div class="actions">
+				<button mat-button matStepperNext [disabled]="!kindControl.valid">
+					<mat-icon>keyboard_arrow_down</mat-icon> weiter
 				</button>
 			</div>
-			<button mat-button (click)="wf.addParameterFieldForm()"><mat-icon>add</mat-icon> Parameter hinzufügen</button>
-			<div>
-				<button mat-button matStepperPrevious>Back</button>
-				<button mat-button matStepperNext>Next</button>
-			</div>
 		</mat-step>
-		<mat-step label="Abschließen">
-			<p>
-				Übersicht: ....
-				<!-- TODO -->
-			</p>
-			<div>
-				<button mat-button matStepperPrevious>Back</button>
-				<button mat-flat-button color="primary" (click)="save()"><mat-icon>save</mat-icon> Save</button>
-			</div>
-		</mat-step>
-	</ng-container>
-</mat-stepper>
+		<ng-container *ngIf="wf" [formGroup]="wf">
+			<mat-step label="Metadaten" state="metadata">
+				<div class="formStep">
+					<mat-form-field appearance="fill">
+						<mat-label>Name</mat-label>
+						<input matInput formControlName="name" required />
+					</mat-form-field>
+					<div>
+						<button mat-raised-button color="primary" class="center" (click)="uploadFile.click()">
+							Icon auswählen
+						</button>
+						<input #uploadFile type="file" (change)="loadImage($event)" accept="image/*" style="display: none" />
+					</div>
+					<mat-form-field appearance="fill">
+						<mat-label>Beschreibung</mat-label>
+						<textarea matInput placeholder="Dieser Workflow kann..." formControlName="description" required></textarea>
+					</mat-form-field>
+					<div class="icoPreview" [ngStyle]="{ backgroundImage: wf.iconStyle }"></div>
+				</div>
+				<div class="actions">
+					<button mat-button matStepperNext [disabled]="!wf.controls.name?.valid || !wf.controls.description?.valid">
+						<mat-icon>keyboard_arrow_down</mat-icon> weiter
+					</button>
+					<button mat-button matStepperPrevious><mat-icon>keyboard_arrow_up</mat-icon></button>
+				</div>
+			</mat-step>
+			<mat-step label="Konfiguration" *ngIf="isKubernetes(wf)" state="config">
+				<div class="formStep">
+					<mat-form-field class="full" appearance="fill">
+						<mat-label>Image</mat-label>
+						<input matInput placeholder="docker-release..." formControlName="image" />
+						<mat-hint>Docker-Tag</mat-hint>
+					</mat-form-field>
+					<br />
+					<div class="full">
+						<p *ngIf="wf.controls.command.controls.length === 0">Startbefehl: Standard des angegebenen Images</p>
+						<mat-form-field
+							appearance="fill"
+							class="compound short"
+							*ngFor="let c of wf.controls.command.controls; let i = index"
+						>
+							<input matInput [formControl]="c" [placeholder]="['/bin/sh', '-c', '...'][i]" />
+							<button matSuffix mat-icon-button (click)="wf.controls.command.removeAt(i)">
+								<mat-icon>close</mat-icon>
+							</button>
+							<mat-hint *ngIf="i === 0">Startbefehl</mat-hint>
+						</mat-form-field>
+					</div>
+					<button class="full center" mat-stroked-button (click)="wf.pushCommand()">
+						<mat-icon>add</mat-icon>
+						{{ wf.controls['command'].controls.length === 0 ? 'Startbefehl anpassen' : 'Befehlsteil hinzufügen' }}
+					</button>
+				</div>
+				<div class="actions">
+					<button mat-button matStepperNext [disabled]="!wf.controls.command.valid || !wf.controls.image.valid">
+						<mat-icon>keyboard_arrow_down</mat-icon> weiter
+					</button>
+					<button mat-button matStepperPrevious><mat-icon>keyboard_arrow_up</mat-icon></button>
+				</div>
+			</mat-step>
+			<mat-step label="Parameterisierung" state="parameterization">
+				<mat-accordion>
+					<mat-expansion-panel
+						*ngFor="let ctl of wf.controls.parameterFields?.controls; let i = index"
+						[formGroup]="ctl"
+					>
+						<mat-expansion-panel-header>
+							<mat-panel-title *ngIf="ctl.value.displayName">{{ ctl.value.displayName }}</mat-panel-title>
+							<mat-panel-title *ngIf="!ctl.value.displayName"><i>unbenannter Parameter</i></mat-panel-title>
+						</mat-expansion-panel-header>
+						<div class="grid">
+							<div class="paramList">
+								<mat-form-field appearance="fill">
+									<mat-label>Typ</mat-label>
+									<mat-select formControlName="kind">
+										<mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
+									</mat-select>
+									<mat-hint>Datentyp des Parameters</mat-hint>
+								</mat-form-field>
+								<mat-form-field appearance="fill">
+									<mat-label>Variablenname</mat-label>
+									<input matInput class="code" formControlName="name" />
+									<mat-hint>Variablenname des Parameters</mat-hint>
+								</mat-form-field>
+								<mat-form-field appearance="fill">
+									<mat-label>Anzeigename</mat-label>
+									<input matInput formControlName="displayName" />
+									<mat-hint>Name für das Textfeld</mat-hint>
+								</mat-form-field>
+								<mat-form-field appearance="fill">
+									<mat-label>Beschreibung</mat-label>
+									<textarea matInput formControlName="description"></textarea>
+									<mat-hint>Zusatzinformationen</mat-hint>
+								</mat-form-field>
+								<mat-form-field appearance="fill">
+									<mat-label>Beispielwert</mat-label>
+									<input matInput formControlName="exampleValue" />
+									<mat-hint>Platzhalter-Wert</mat-hint>
+								</mat-form-field>
+								<mat-form-field appearance="fill">
+									<mat-label>Eingabehinweis</mat-label>
+									<input matInput formControlName="hint" />
+									<mat-hint>wird unter dem Textfeld angezeigt</mat-hint>
+								</mat-form-field>
+								<mat-checkbox formControlName="required">Erforderlich</mat-checkbox>
+								<mat-form-field appearance="fill">
+									<mat-label> &nbsp; Regulärer Ausdruck</mat-label>
+									<span matPrefix class="code">/^</span>
+									<input matInput class="code" placeholder="[A-z][0-9]+" formControlName="pattern" />
+									<span matSuffix class="code">$/ &nbsp; </span>
+									<button matSuffix mat-icon-button (click)="regexHelp()">
+										<mat-icon class="smallIco">help</mat-icon>
+									</button>
+									<mat-hint>muss die Nutzereingabe akzeptieren</mat-hint>
+								</mat-form-field>
+							</div>
+							<div class="previewContainer">
+								<p><i>Vorschau:</i></p>
+								<p class="newlined">{{ ctl.value.description }}</p>
+								<app-param-input [ctl]="previewFormControl(i)"></app-param-input>
+							</div>
+						</div>
+						<mat-action-row>
+							<button mat-button color="warn" (click)="wf.controls.parameterFields?.removeAt(i)">
+								Parameter Löschen
+							</button>
+						</mat-action-row>
+					</mat-expansion-panel>
+				</mat-accordion>
+				<button mat-stroked-button (click)="wf.pushParameterField()" class="center">
+					<mat-icon>add</mat-icon> Parameter hinzufügen
+				</button>
+				<div class="actions">
+					<button mat-button matStepperNext [disabled]="!wf.controls['parameterFields']?.valid">
+						<mat-icon>keyboard_arrow_down</mat-icon> weiter
+					</button>
+					<button mat-button matStepperPrevious><mat-icon>keyboard_arrow_up</mat-icon></button>
+				</div>
+			</mat-step>
+			<mat-step label="Abschließen" state="check">
+				<div class="formStep" *ngIf="!wf.valid">
+					<p>Eingabedaten ungültig.<br />Bitte Fehler im Formular korrigieren um zu speichern.</p>
+				</div>
+				<div class="formStep" *ngIf="wf.valid">
+					<table *ngIf="currentValue" class="full">
+						<tr>
+							<th>Workflow-Typ</th>
+							<td>{{ isKubernetes(wf) ? 'Kubernetes' : 'WebWorker' }}</td>
+						</tr>
+						<tr>
+							<th>Name</th>
+							<td>{{ wf.value.name }}</td>
+						</tr>
+						<tr>
+							<th>Beschreibung</th>
+							<td>{{ wf.value.description }}</td>
+						</tr>
+						<tr *ngIf="isKubernetes(wf)">
+							<th>Docker-Image</th>
+							<td>
+								<code>{{ wf.value.image }}</code>
+							</td>
+						</tr>
+						<tr *ngIf="isKubernetes(wf)">
+							<th>Startbefehl</th>
+							<td *ngIf="wf.controls.command.value.length > 0">
+								<code>{{ wf.controls.command.value | json }}</code>
+							</td>
+							<td *ngIf="wf.controls.command.value.length === 0"><i>standard</i></td>
+						</tr>
+						<tr>
+							<th>Parameter</th>
+							<td *ngIf="currentValue.parameterFields">
+								<span *ngIf="currentValue.parameterFields.length <= 0"><i>keine</i></span>
+								<ul *ngIf="currentValue.parameterFields.length > 0">
+									<li *ngFor="let p of currentValue.parameterFields">{{ p.name }} ({{ p.kind }})</li>
+								</ul>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div class="actions">
+					<button mat-flat-button color="primary" (click)="save()" [disabled]="!wf.valid">
+						<mat-icon>save</mat-icon> Speichern
+					</button>
+					<button mat-button matStepperPrevious><mat-icon>keyboard_arrow_up</mat-icon></button>
+				</div>
+			</mat-step>
+		</ng-container>
+		<!-- Icon overrides -->
+		<ng-template matStepperIcon="kind">
+			<mat-icon>type_specimen</mat-icon>
+		</ng-template>
+		<ng-template matStepperIcon="metadata">
+			<mat-icon>description</mat-icon>
+		</ng-template>
+		<ng-template matStepperIcon="config">
+			<mat-icon>settings</mat-icon>
+		</ng-template>
+		<ng-template matStepperIcon="parameterization">
+			<mat-icon>input</mat-icon>
+		</ng-template>
+		<ng-template matStepperIcon="check">
+			<mat-icon>checklist</mat-icon>
+		</ng-template>
+	</mat-stepper>
+</mat-card>

@@ -1,1 +1,25 @@
-<p>workflow-run-configure works!</p>
+<h2>{{ wf?.name || '' }} - konfigurieren</h2>
+<mat-card *ngIf="!wf || !paramForm">
+	<h3>Lädt...</h3>
+	<p>Bitte warten</p>
+</mat-card>
+<mat-card *ngIf="paramForm">
+	<div class="paramGrid">
+		<ng-container *ngFor="let c of paramForm.controls">
+			<div class="desc">
+				<p>
+					<b>{{ c.parameter.displayName }}</b>
+					<br />
+					{{ c.parameter.description }}
+				</p>
+			</div>
+			<app-param-input [ctl]="c"></app-param-input>
+		</ng-container>
+	</div>
+	<mat-card-actions align="end">
+		<button mat-stroked-button (click)="cancel()"><mat-icon>keyboard_arrow_left</mat-icon> Abbuch</button>
+		<button mat-raised-button color="primary" [disabled]="!paramForm.valid" (click)="start()">
+			<mat-icon>play_arrow</mat-icon> Starten
+		</button>
+	</mat-card-actions>
+</mat-card>

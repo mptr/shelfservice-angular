@@ -1,3 +1,89 @@
 button.selected {
 	border-color: var(--primary-color);
 }
+.kindSelect {
+	display: flex;
+	gap: 1em;
+	button {
+		padding: 1em 3em;
+	}
+}
+.formStep {
+	padding: 2em 0 1em;
+	display: grid;
+	gap: 0.5em;
+	.full {
+		grid-column: 1 / span 2;
+	}
+	button {
+		width: fit-content;
+		height: fit-content;
+	}
+	grid-template-columns: auto auto;
+}
+button.center {
+	margin: 1em auto;
+	display: block;
+}
+.icoPreview {
+	height: 5em;
+	width: 5em;
+	border-radius: 100%;
+	background-size: cover;
+	box-shadow: inset 0px 0px 5px #00000033;
+	background-position: center;
+	margin: 0 auto;
+}
+.grid {
+	display: grid;
+	gap: 1em;
+	grid-template-columns: 1fr 1fr;
+}
+.paramList {
+	display: grid;
+	gap: 1em;
+	grid-template-columns: 1fr;
+}
+.previewContainer {
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+}
+.code {
+	font-family: monospace;
+}
+.smallIco {
+	scale: 0.8;
+}
+mat-accordion textarea {
+	height: 1em;
+}
+mat-form-field.short {
+	width: 10em;
+}
+table {
+	width: fit-content;
+	text-align: left;
+	th {
+		padding-right: 2em;
+	}
+}
+
+.actions {
+	display: flex;
+	justify-content: space-between;
+	gap: 1em;
+}
+::ng-deep {
+	.compound:not(:last-of-type) {
+		.mat-form-field-flex {
+			border-top-right-radius: 0;
+		}
+	}
+	.compound:not(:first-of-type) {
+		.mat-form-field-flex {
+			border-top-left-radius: 0;
+		}
+	}
+}

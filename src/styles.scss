@@ -51,3 +51,20 @@ body {
 	margin: 0;
 	font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+.newlined {
+	white-space: pre-wrap;
+}
+/* SCROLLBAR */
+::-webkit-scrollbar {
+	width: 10px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background: #bbb;
+	border: 2px solid #f1f1f1;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: #999;
+}

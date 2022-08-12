@@ -12,12 +12,9 @@
 			<mat-icon class="material-icons-outlined">info</mat-icon>
 			Details
 		</button>
-		<button *ngIf="workflow.hasParams" mat-flat-button color="primary">
-			<mat-icon>edit_note</mat-icon>
-		</button>
-		<button *ngIf="!workflow.hasParams" mat-flat-button color="primary">
-			<mat-icon>play_arrow</mat-icon>
-			Starten
+		<button mat-flat-button [routerLink]="[workflow.id]" color="primary">
+			<ng-container *ngIf="workflow.hasParams"><mat-icon>edit_note</mat-icon> Konfigurieren</ng-container>
+			<ng-container *ngIf="!workflow.hasParams"> <mat-icon>play_arrow</mat-icon> Starten</ng-container>
 		</button>
 	</mat-card-actions>
 </mat-card>

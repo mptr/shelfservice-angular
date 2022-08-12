@@ -19,3 +19,9 @@ app-footer {
 mat-drawer-container {
 	min-height: calc(100% - $navHeight - $footerHeight);
 }
+.content {
+	padding: 4em 7em;
+}
+mat-step {
+	padding: 2em;
+}
