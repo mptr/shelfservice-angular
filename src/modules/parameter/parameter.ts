@@ -25,7 +25,6 @@ export enum ParameterType {
 	NUMBER = 'number',
 	BOOLEAN = 'boolean',
 	DATE = 'date',
-	__SET = 0,
 }
 export const parameterIcons = {
 	[ParameterType.STRING]: 'text_fields',
@@ -33,7 +32,6 @@ export const parameterIcons = {
 	[ParameterType.NUMBER]: 'dialpad',
 	[ParameterType.BOOLEAN]: 'check_box',
 	[ParameterType.DATE]: 'date_range',
-	[ParameterType.__SET]: '',
 };
 
 export abstract class Parameter {
@@ -165,7 +163,7 @@ export class SelectParameter extends RequirableParameter {
 	override validators(): ValidatorFn[] {
 		return super
 			.validators()
-			.concat((ctl: AbstractControl) => (this.options.includes(ctl.value) ? null : { option: true }));
+			.concat((ctl: AbstractControl) => (!ctl.value || this.options.includes(ctl.value) ? null : { option: true }));
 	}
 	override formGroup() {
 		return new FormGroupedSelectParameter(
@@ -189,21 +187,21 @@ export class FormGroupedSelectParameter extends FormGroupedParameter<SelectParam
 	}
 }
 
-export class SetParameter extends Parameter {
-	override kind = ParameterType.__SET;
-	constructor(value: string) {
-		super();
-		this.value = value;
+export class SetParameters extends FormArray<SetParameterFormControl> {
+	get configObject() {
+		return this.controls.reduce(
+			(prev, cur) => ({
+				...prev,
+				[cur.parameter.name]: `${cur.value}`,
+			}),
+			{},
+		);
 	}
-	value?: string;
 }
+
 export class SetParameterFormControl extends FormControl {
 	constructor(public parameter: Parameter, value = '') {
 		super(value, parameter.validators());
-	}
-
-	toSetParameter() {
-		return new SetParameter(this.value);
 	}
 }
 

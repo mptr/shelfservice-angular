@@ -16,7 +16,6 @@ export class ShelfListComponent implements OnInit {
 			.navigate('workflows', WorkflowDefinitionList)
 			.getAll()
 			.then(wfs => {
-				console.log(wfs);
 				this.workflows = wfs;
 			});
 	}

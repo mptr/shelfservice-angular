@@ -29,7 +29,14 @@
 	</mat-form-field>
 	<mat-form-field *ngIf="isNumberParameter(parameter)" appearance="fill">
 		<mat-label>{{ parameter.displayName }}</mat-label>
-		<input matInput [formControl]="ctl" [min]="parameter.min" [max]="parameter.max" [step]="parameter.step" />
+		<input
+			matInput
+			type="number"
+			[formControl]="ctl"
+			[min]="parameter.min ?? null"
+			[max]="parameter.max ?? null"
+			[step]="parameter.step"
+		/>
 		<mat-hint>{{ parameter.hint }}</mat-hint>
 		<mat-error *ngIf="ctl.errors && ctl.errors['required']"> Parameter ist erforderlich </mat-error>
 		<mat-error *ngIf="ctl.errors && ctl.errors['min']"> Wert muss >= {{ parameter.min }} sein </mat-error>
@@ -47,5 +54,6 @@
 		</mat-select>
 		<mat-hint>{{ parameter.hint }}</mat-hint>
 		<mat-error *ngIf="ctl.errors && ctl.errors['required']"> Parameter ist erforderlich </mat-error>
+		<mat-error *ngIf="ctl.errors && ctl.errors['option']"> Bitte eine Auswahl treffen </mat-error>
 	</mat-form-field>
 </ng-container>

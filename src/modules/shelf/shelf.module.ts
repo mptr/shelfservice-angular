@@ -7,9 +7,19 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ShelfItemDetailsDialogComponent } from './shelf-item-details/shelf-item-details.dialog';
 
 @NgModule({
-	declarations: [ShelfListComponent, ShelfItemComponent],
-	imports: [CommonModule, HttpClientModule, RouterModule, MatCardModule, MatButtonModule, MatIconModule],
+	declarations: [ShelfListComponent, ShelfItemComponent, ShelfItemDetailsDialogComponent],
+	imports: [
+		CommonModule,
+		HttpClientModule,
+		RouterModule,
+		MatCardModule,
+		MatButtonModule,
+		MatIconModule,
+		MatDialogModule,
+	],
 })
 export class ShelfModule {}

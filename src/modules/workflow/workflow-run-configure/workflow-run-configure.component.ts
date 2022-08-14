@@ -1,9 +1,8 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormArray } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RestService } from 'src/services/rest/rest.service';
-import { SetParameter, SetParameterFormControl } from '../../parameter/parameter';
+import { Parameter, SetParameterFormControl, SetParameters } from '../../parameter/parameter';
 import { WorkflowDefinition } from '../workflow-definition';
 
 @Component({
@@ -21,7 +20,7 @@ export class WorkflowRunConfigureComponent implements OnInit {
 	wfId?: string;
 	wf?: WorkflowDefinition;
 
-	paramForm?: FormArray<SetParameterFormControl>;
+	paramForm?: SetParameters;
 
 	ngOnInit(): void {
 		this.wfId = this.activatedRoute.snapshot.url[0].path;
@@ -32,7 +31,10 @@ export class WorkflowRunConfigureComponent implements OnInit {
 			.getOne(this.wfId)
 			.then(fetched => {
 				this.wf = fetched;
-				this.paramForm = new FormArray(this.wf.parameterFields?.map(p => new SetParameterFormControl(p)) || []);
+				this.paramForm = new SetParameters(
+					this.wf.parameterFields?.map(p => new SetParameterFormControl(Parameter.factory(p.kind).accept(p))) || [],
+				);
+				console.log(this.paramForm);
 			});
 	}
 
@@ -43,8 +45,8 @@ export class WorkflowRunConfigureComponent implements OnInit {
 		this.rest.new
 			.navigate('workflows')
 			.navigate(this.wfId)
-			.navigate('runs', Array<SetParameter>)
-			.post(this.paramForm.controls.map(ctl => ctl.toSetParameter()))
+			.navigate('runs', Object)
+			.post(this.paramForm.configObject)
 			.then(console.log);
 	}
 
