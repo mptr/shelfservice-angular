@@ -11,6 +11,6 @@ export class ShelfItemComponent {
 	workflow!: WorkflowDefinitionList;
 
 	get ownerNames() {
-		return this.workflow.owners.map(o => o.given_name?.substring(0, 1) + ' ' + o.family_name).join(', ');
+		return this.workflow.owners?.map(o => o.given_name?.substring(0, 1) + ' ' + o.family_name).join(', ');
 	}
 }

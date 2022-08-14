@@ -1,8 +1,8 @@
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
-import { FormControlable } from 'src/util/formControllable';
+import { FormGrouped } from 'src/util/formControllable';
 import { User } from 'src/util/User.entity';
 import { WorkflowLabel } from 'src/util/workflowLabels';
-import { Parameter, ParameterFormGroup } from './parameter';
+import { FormGroupedParameter, Parameter } from '../parameter/parameter';
 
 export class WorkflowDefinitionList {
 	id?: string;
@@ -10,7 +10,7 @@ export class WorkflowDefinitionList {
 	name?: string;
 	description?: string;
 	icon?: string;
-	owners: User[] = [];
+	owners?: User[] = [];
 	hasParams?: boolean;
 
 	iconStyle() {
@@ -18,36 +18,42 @@ export class WorkflowDefinitionList {
 	}
 }
 export class WorkflowDefinition extends WorkflowDefinitionList {
-	parameterFields: Parameter[] = [];
+	parameterFields?: Parameter[] = [];
+
+	formGroup() {
+		return new WorkflowDefinitionFormGroup(this);
+	}
 }
 
-export class WorkflowDefinitionFormGroup extends FormGroup<FormControlable<WorkflowDefinition>> {
+export class WorkflowDefinitionFormGroup
+	extends FormGroup
+	implements FormGrouped<Pick<WorkflowDefinition, 'name' | 'description' | 'icon' | 'parameterFields'>>
+{
 	constructor(p?: Partial<WorkflowDefinition>) {
 		super({
 			name: new FormControl(p?.name, Validators.required),
 			description: new FormControl(p?.description, Validators.required),
 			icon: new FormControl(p?.icon),
-			parameterFields: new FormArray(p?.parameterFields?.map(x => new ParameterFormGroup(x)) || []),
+			parameterFields: new FormArray(
+				p?.parameterFields?.map(x => {
+					return Parameter.factory(x.kind).accept(x).formGroup();
+				}) || [],
+			),
 		});
 	}
 
+	get ctls() {
+		return this.controls as {
+			name: FormControl;
+			description: FormControl;
+			icon: FormControl;
+			parameterFields: FormArray<FormGroupedParameter>;
+		};
+	}
+
 	get iconStyle() {
-		const v = this.controls['icon']?.value;
+		const v = this.ctls.icon.value;
 		if (!v) return 'linear-gradient(45deg, #ccc, #eee)';
 		return `url(${v})`;
-	}
-
-	pushParameterField() {
-		(this.controls['parameterFields'] as FormArray).push(new ParameterFormGroup({}));
-	}
-}
-
-export class WorkflowConfigurationFormArray extends FormArray<FormControl> {
-	constructor(wfdef: Pick<WorkflowDefinition, 'parameterFields'>) {
-		super(
-			wfdef.parameterFields.map(param => {
-				return new FormControl();
-			}),
-		);
 	}
 }

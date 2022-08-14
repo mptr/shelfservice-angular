@@ -1,0 +1,81 @@
+<div class="paramList" [formGroup]="ctl">
+	<!-- Parameter -->
+	<mat-form-field appearance="fill">
+		<mat-label>Variablenname</mat-label>
+		<input matInput class="code" formControlName="name" />
+		<mat-hint>Variablenname des Parameters</mat-hint>
+	</mat-form-field>
+	<mat-form-field appearance="fill">
+		<mat-label>Anzeigename</mat-label>
+		<input matInput formControlName="displayName" />
+		<mat-hint>Name für das Textfeld</mat-hint>
+	</mat-form-field>
+	<mat-form-field appearance="fill">
+		<mat-label>Beschreibung</mat-label>
+		<textarea matInput formControlName="description"></textarea>
+		<mat-hint>Zusatzinformationen</mat-hint>
+	</mat-form-field>
+	<!-- RequirableParameter -->
+	<mat-form-field *ngIf="isRequirableParameterFg(ctl)" appearance="fill">
+		<mat-label>Eingabehinweis</mat-label>
+		<input matInput formControlName="hint" />
+		<mat-hint>wird unter dem Textfeld angezeigt</mat-hint>
+	</mat-form-field>
+	<mat-checkbox *ngIf="isRequirableParameterFg(ctl)" formControlName="required">Erforderlich</mat-checkbox>
+	<!-- StringParameter -->
+	<mat-checkbox *ngIf="isStringParameterFg(ctl)" formControlName="multiline">Mehrzeilig</mat-checkbox>
+	<mat-form-field *ngIf="isStringParameterFg(ctl)" appearance="fill">
+		<mat-label>Beispielwert</mat-label>
+		<input matInput formControlName="exampleValue" />
+		<mat-hint>Platzhalter-Wert</mat-hint>
+	</mat-form-field>
+	<mat-form-field *ngIf="isStringParameterFg(ctl)" appearance="fill">
+		<mat-label> &nbsp; Regulärer Ausdruck</mat-label>
+		<span matPrefix class="code">/^</span>
+		<input matInput class="code" placeholder="[A-z][0-9]+" formControlName="pattern" />
+		<span matSuffix class="code">$/u &nbsp; </span>
+		<button matSuffix mat-icon-button (click)="regexHelp()">
+			<mat-icon class="smallIco">help</mat-icon>
+		</button>
+		<mat-hint>muss die Nutzereingabe akzeptieren</mat-hint>
+	</mat-form-field>
+	<!-- NumberParameter -->
+	<mat-form-field *ngIf="isNumberParameterFg(ctl)" appearance="fill">
+		<mat-label>Minimalwert</mat-label>
+		<input matInput formControlName="min" />
+		<mat-hint>x >= min</mat-hint>
+	</mat-form-field>
+	<mat-form-field *ngIf="isNumberParameterFg(ctl)" appearance="fill">
+		<mat-label>Maximalwert</mat-label>
+		<input matInput formControlName="max" />
+		<mat-hint>x <= min</mat-hint>
+	</mat-form-field>
+	<mat-form-field *ngIf="isNumberParameterFg(ctl)" appearance="fill">
+		<mat-label>Schrittweite</mat-label>
+		<input matInput formControlName="step" />
+		<mat-hint>(x mod step) == 0</mat-hint>
+	</mat-form-field>
+	<!-- SelectParameter -->
+	<mat-form-field *ngIf="isSelectParameterFg(ctl)" appearance="fill">
+		<mat-label>Optionen</mat-label>
+		<mat-chip-list #optList>
+			<mat-chip *ngFor="let opt of ctl.options.value; let i = index" (removed)="ctl.removeOptionAt(i)">
+				{{ opt }}
+				<button matChipRemove>
+					<mat-icon>cancel</mat-icon>
+				</button>
+			</mat-chip>
+			<input
+				#optInput
+				placeholder="Neue Option..."
+				[matChipInputFor]="optList"
+				[matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+				(matChipInputTokenEnd)="addOption($event.value)"
+			/>
+			<button mat-icon-button matSuffix (click)="addOption(optInput.value)">
+				<mat-icon>keyboard_return</mat-icon>
+			</button>
+		</mat-chip-list>
+		<mat-hint>Optionsliste</mat-hint>
+	</mat-form-field>
+</div>

@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Art des Parameters auswählen</h1>
+<mat-dialog-content class="grid">
+	<button
+		*ngFor="let o of options; let i = index"
+		mat-stroked-button
+		[class.wide]="i === 0"
+		(click)="select(o.kind)"
+		[matTooltip]="o.desc"
+		[matTooltipPosition]="i % 2 === 0 ? 'after' : 'before'"
+		[matTooltipShowDelay]="500"
+	>
+		<mat-icon>{{ o.icon }}</mat-icon>
+		{{ o.label }}
+	</button>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+	<button mat-flat-button (click)="cancel()">Abbrechen</button>
+</mat-dialog-actions>

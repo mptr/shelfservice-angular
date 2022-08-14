@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RestService } from 'src/services/rest/rest.service';
-import { SetParameter, SetParameterFormControl } from '../parameter';
+import { SetParameter, SetParameterFormControl } from '../../parameter/parameter';
 import { WorkflowDefinition } from '../workflow-definition';
 
 @Component({
@@ -32,7 +32,7 @@ export class WorkflowRunConfigureComponent implements OnInit {
 			.getOne(this.wfId)
 			.then(fetched => {
 				this.wf = fetched;
-				this.paramForm = new FormArray(this.wf.parameterFields.map(p => new SetParameterFormControl(p)));
+				this.paramForm = new FormArray(this.wf.parameterFields?.map(p => new SetParameterFormControl(p)) || []);
 			});
 	}
 

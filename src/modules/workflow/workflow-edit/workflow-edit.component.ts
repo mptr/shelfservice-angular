@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { RestService } from 'src/services/rest/rest.service';
 import { enumToString } from 'src/util/enumToString';
 import { WorkflowLabel } from 'src/util/workflowLabels';
 import { KubernetesWorkflowDefinitionFormGroup } from '../k8s-workflow-definition';
-import { ParameterType, SetParameterFormControl } from '../parameter';
+import { Parameter, ParameterType, SetParameterFormControl } from '../../parameter/parameter';
 import { WebWorkerWorkflowDefinitionFormGroup } from '../webworker-workflow-definition';
 import { WorkflowDefinition, WorkflowDefinitionFormGroup } from '../workflow-definition';
+import { AddParameterDialogComponent } from '../../parameter/add-parameter/add-parameter.dialog';
 
 @Component({
 	selector: 'app-workflow-edit',
@@ -19,14 +21,19 @@ export class WorkflowEditComponent implements OnInit {
 
 	kindControl = new FormControl<WorkflowLabel | undefined>(undefined, Validators.required);
 
-	wf?: WorkflowDefinitionFormGroup = new KubernetesWorkflowDefinitionFormGroup();
+	wf: WorkflowDefinitionFormGroup = new KubernetesWorkflowDefinitionFormGroup();
 
-	constructor(private readonly activatedRoute: ActivatedRoute, private readonly rest: RestService) {}
+	constructor(
+		private readonly dialog: MatDialog,
+		private readonly activatedRoute: ActivatedRoute,
+		private readonly rest: RestService,
+	) {}
 
 	types = enumToString(ParameterType);
 
 	ngOnInit() {
 		this.editId = this.activatedRoute.snapshot.url[0].path;
+		this.kindControl.valueChanges.subscribe(x => this.switchWfType(x));
 		if (this.editId !== 'new') {
 			// there exists an id, so we need to load the workflow
 			this.rest.new
@@ -35,19 +42,23 @@ export class WorkflowEditComponent implements OnInit {
 				.then(fetched => {
 					this.kindControl.setValue(fetched.kind);
 					this.wf = new WorkflowDefinitionFormGroup(fetched);
-					this.switchWfType(fetched.kind);
 				});
 		} else this.editId = undefined;
-		this.kindControl.valueChanges.subscribe(x => this.switchWfType(x));
+		this.setupCachePreviewControls();
 	}
 
 	private switchWfType(kind?: WorkflowLabel | null) {
 		if (kind === 'kubernetes') this.wf = new KubernetesWorkflowDefinitionFormGroup(this.wf?.value);
 		else if (kind === 'webworker') this.wf = new WebWorkerWorkflowDefinitionFormGroup(this.wf?.value);
-		else this.wf = undefined;
-		this.wf?.controls.parameterFields?.valueChanges.subscribe(
-			vs => (this.prevCtl = vs.map(v => new SetParameterFormControl(v))),
-		);
+		this.setupCachePreviewControls();
+	}
+	private setupCachePreviewControls() {
+		this.wf.ctls.parameterFields.valueChanges.subscribe(() => {
+			this.previewControls =
+				this.wf.ctls.parameterFields.controls.map(pf => {
+					return new SetParameterFormControl(pf.toParameter());
+				}) || [];
+		});
 	}
 
 	isKubernetes(wf: WorkflowDefinitionFormGroup): wf is KubernetesWorkflowDefinitionFormGroup {
@@ -59,7 +70,7 @@ export class WorkflowEditComponent implements OnInit {
 	}
 
 	save() {
-		if (!this.wf || !this.kindControl.value) return;
+		if (!this.kindControl.value) return;
 		const v = this.wf.value;
 		console.log(v);
 		const rest = this.rest.new.navigate('workflows');
@@ -70,34 +81,32 @@ export class WorkflowEditComponent implements OnInit {
 			.catch(e => console.error('err', e));
 	}
 
-	loadImage($event: Event) {
-		if (!this.wf) throw new Error('no workflow form group loaded');
+	loadImage($event: { target: (EventTarget & { files?: Blob[] }) | null }) {
 		const fctl = this.wf.get('icon');
 		if (!fctl) throw new Error('Icon Form Control not found');
-		if (!$event.target) {
+		const fs = $event.target?.files;
+		if (!fs) {
 			fctl?.setValue('');
 			return;
 		}
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore it is a file input
-		const f = $event.target.files[0];
 		const reader = new FileReader();
 		reader.onload = e => {
-			fctl.setValue(e.target?.result || '');
+			fctl.setValue(e.target?.result?.toString() || '');
 		};
-		reader.readAsDataURL(f);
+		reader.readAsDataURL(fs[0]);
 	}
 
-	regexHelp() {
-		window.open('https://regex101.com', '_blank');
-	}
+	previewControls: SetParameterFormControl[] = [];
 
-	get currentValue() {
-		return this.wf?.value;
-	}
-
-	prevCtl: SetParameterFormControl[] = [];
-	previewFormControl(i: number) {
-		return this.prevCtl[i];
+	addParam() {
+		this.dialog
+			.open(AddParameterDialogComponent, {
+				autoFocus: false,
+			})
+			.afterClosed()
+			.subscribe(result => {
+				if (!result) return;
+				this.wf.ctls.parameterFields.push(Parameter.factory(result).formGroup());
+			});
 	}
 }

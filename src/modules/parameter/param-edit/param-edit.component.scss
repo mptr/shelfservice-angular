@@ -1,0 +1,11 @@
+.paramList {
+	display: grid;
+	gap: 1em;
+	grid-template-columns: 1fr;
+}
+.code {
+	font-family: monospace;
+}
+.smallIco {
+	scale: 0.8;
+}
