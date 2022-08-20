@@ -12,14 +12,14 @@ button.selected {
 	padding: 2em 0 1em;
 	display: grid;
 	gap: 0.5em;
-	.full {
-		grid-column: 1 / span 2;
+	grid-template-columns: auto;
+	&.twoCol {
+		grid-template-columns: 1fr 1fr;
 	}
 	button {
 		width: fit-content;
 		height: fit-content;
 	}
-	grid-template-columns: auto auto;
 }
 button.center {
 	margin: 1em auto;

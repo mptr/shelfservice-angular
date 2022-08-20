@@ -4,22 +4,25 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { RestService } from 'src/services/rest/rest.service';
 import { enumToString } from 'src/util/enumToString';
-import { WorkflowLabel } from 'src/util/workflowLabels';
-import { KubernetesWorkflowDefinitionFormGroup } from '../k8s-workflow-definition';
-import { Parameter, ParameterType, SetParameterFormControl } from '../../parameter/parameter';
-import { WebWorkerWorkflowDefinitionFormGroup } from '../webworker-workflow-definition';
-import { WorkflowDefinition, WorkflowDefinitionFormGroup } from '../workflow-definition';
+import { Parameter, ParameterType, SetParameterFormControl } from '../../parameter/entities';
+import {
+	KubernetesWorkflowDefinitionFormGroup,
+	WorkflowDefinition,
+	WorkflowDefinitionFormGroup,
+	WorkflowType,
+} from '../entities';
 import { AddParameterDialogComponent } from '../../parameter/add-parameter/add-parameter.dialog';
+import { WorkflowDefinitionHelpers } from '../workflow-definition.helpers';
 
 @Component({
 	selector: 'app-workflow-edit',
 	templateUrl: './workflow-edit.component.html',
 	styleUrls: ['./workflow-edit.component.scss'],
 })
-export class WorkflowEditComponent implements OnInit {
-	editId?: string;
+export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements OnInit {
+	editId: string | null = null;
 
-	kindControl = new FormControl<WorkflowLabel | undefined>(undefined, Validators.required);
+	kindControl = new FormControl<WorkflowType | undefined>(undefined, Validators.required);
 
 	wf: WorkflowDefinitionFormGroup = new KubernetesWorkflowDefinitionFormGroup();
 
@@ -27,29 +30,29 @@ export class WorkflowEditComponent implements OnInit {
 		private readonly dialog: MatDialog,
 		private readonly activatedRoute: ActivatedRoute,
 		private readonly rest: RestService,
-	) {}
+	) {
+		super();
+	}
 
 	types = enumToString(ParameterType);
 
 	ngOnInit() {
-		this.editId = this.activatedRoute.snapshot.url[0].path;
+		this.editId = this.activatedRoute.snapshot.paramMap.get('id');
 		this.kindControl.valueChanges.subscribe(x => this.switchWfType(x));
-		if (this.editId !== 'new') {
+		if (this.editId !== null) {
 			// there exists an id, so we need to load the workflow
 			this.rest.new
 				.navigate('workflows', WorkflowDefinition)
 				.getOne(this.editId)
 				.then(fetched => {
-					this.kindControl.setValue(fetched.kind);
 					this.wf = new WorkflowDefinitionFormGroup(fetched);
+					this.kindControl.setValue(fetched.kind);
 				});
-		} else this.editId = undefined;
-		this.setupCachePreviewControls();
+		}
 	}
 
-	private switchWfType(kind?: WorkflowLabel | null) {
-		if (kind === 'kubernetes') this.wf = new KubernetesWorkflowDefinitionFormGroup(this.wf?.value);
-		else if (kind === 'webworker') this.wf = new WebWorkerWorkflowDefinitionFormGroup(this.wf?.value);
+	private switchWfType(kind?: WorkflowType | null) {
+		if (kind) this.wf = this.wf.convert(kind);
 		this.setupCachePreviewControls();
 	}
 	private setupCachePreviewControls() {
@@ -59,14 +62,6 @@ export class WorkflowEditComponent implements OnInit {
 					return new SetParameterFormControl(pf.toParameter());
 				}) || [];
 		});
-	}
-
-	isKubernetes(wf: WorkflowDefinitionFormGroup): wf is KubernetesWorkflowDefinitionFormGroup {
-		return wf instanceof KubernetesWorkflowDefinitionFormGroup;
-	}
-
-	isWebWorker(wf: WorkflowDefinitionFormGroup): wf is WebWorkerWorkflowDefinitionFormGroup {
-		return wf instanceof WebWorkerWorkflowDefinitionFormGroup;
 	}
 
 	save() {
@@ -104,9 +99,9 @@ export class WorkflowEditComponent implements OnInit {
 				autoFocus: false,
 			})
 			.afterClosed()
-			.subscribe(result => {
-				if (!result) return;
-				this.wf.ctls.parameterFields.push(Parameter.factory(result).formGroup());
+			.subscribe(kind => {
+				if (!kind) return;
+				this.wf.ctls.parameterFields.push(Parameter.factory({ kind }).formGroup());
 			});
 	}
 }

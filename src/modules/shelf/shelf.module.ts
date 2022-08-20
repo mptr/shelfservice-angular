@@ -9,6 +9,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ShelfItemDetailsDialogComponent } from './shelf-item-details/shelf-item-details.dialog';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { WorkflowModule } from '../workflow/workflow.module';
 
 @NgModule({
 	declarations: [ShelfListComponent, ShelfItemComponent, ShelfItemDetailsDialogComponent],
@@ -20,6 +24,10 @@ import { ShelfItemDetailsDialogComponent } from './shelf-item-details/shelf-item
 		MatButtonModule,
 		MatIconModule,
 		MatDialogModule,
+		MatDividerModule,
+		MatTooltipModule,
+		MatMenuModule,
+		WorkflowModule,
 	],
 })
 export class ShelfModule {}

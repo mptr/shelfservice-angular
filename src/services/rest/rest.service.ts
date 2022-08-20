@@ -1,11 +1,10 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, lastValueFrom, map, Observable, of, tap } from 'rxjs';
+import { plainToInstance, ClassConstructor, ClassTransformOptions } from 'class-transformer';
+import { catchError, lastValueFrom, map, Observable, of } from 'rxjs';
 import { Message } from '../message/Message';
 import { environment } from 'src/environments/environment';
 import { MessageService } from '../message/message.service';
-
-type Constructable<T> = new () => T;
 
 type id = string | number;
 
@@ -19,7 +18,7 @@ export class RestService {
 	}
 }
 
-class RestClient<T, P = never> {
+class RestClient<T> {
 	// public constructor
 	static new(http: HttpClient, msgService: MessageService) {
 		return new RestClient<never>(environment.apiBaseUrl, null, http, msgService);
@@ -32,18 +31,18 @@ class RestClient<T, P = never> {
 
 	private constructor(
 		readonly urlPart: string,
-		private readonly parent: RestClient<P> | null = null,
+		private readonly parent: RestClient<unknown> | null = null,
 		private readonly http: HttpClient,
 		private readonly msgService: MessageService,
-		private readonly ctor?: Constructable<T>,
+		private readonly ctor?: ClassConstructor<T>,
 	) {}
 
 	get url(): string {
 		return this.parent ? `${this.parent.url}/${this.urlPart}` : this.urlPart;
 	}
 
-	navigate<C = never>(str: string, ctor?: Constructable<C>): RestClient<C, T> {
-		return new RestClient<C, T>(str, this, this.http, this.msgService, ctor);
+	navigate<C = never>(str: string, ctor?: ClassConstructor<C>): RestClient<C> {
+		return new RestClient<C>(str, this, this.http, this.msgService, ctor);
 	}
 
 	post(data: Partial<T>): Promise<T> {
@@ -72,40 +71,37 @@ class RestClient<T, P = never> {
 		return this.intercept(() => this.http.delete<T>(this.url + '/' + id));
 	}
 
+	sse(): Observable<string> {
+		return new Observable(subscriber => {
+			const sse = new EventSource(this.url);
+			sse.onmessage = e => {
+				const d = JSON.parse(e.data);
+				if (d.type === 'complete') subscriber.complete();
+				else subscriber.next(d.message);
+			};
+			sse.onerror = e => subscriber.error(e);
+			return () => sse.close();
+		});
+	}
+
+	private static instanciateOptions: ClassTransformOptions = { excludeExtraneousValues: true };
+
 	private intercept(handler: () => Observable<T[]>): Promise<T[]>;
 	private intercept(handler: () => Observable<T>): Promise<T>;
 	private intercept(handler: () => Observable<T | T[]>): Promise<T | T[]> {
 		const observer = handler().pipe(
 			catchError((error: HttpErrorResponse) => this.handleError(error)),
 			map(x => {
-				if (!this.ctor) return x;
-				else return RestClient.instanciate(x, this.ctor);
+				if (this.ctor) return plainToInstance(this.ctor, x, RestClient.instanciateOptions);
+				console.warn('No ctor given for', this.url);
+				return x;
 			}),
-			tap(x => console.log('RESPONSE', x)),
 		);
 		try {
 			return lastValueFrom(observer);
 		} catch (e) {
 			return Promise.reject(e);
 		}
-	}
-
-	private static instanciate<T>(x: T, ctor: Constructable<T>): T;
-	private static instanciate<T>(x: T[], ctor: Constructable<T>): T[];
-	private static instanciate<T>(x: T | T[], ctor: Constructable<T>) {
-		let result;
-		if (Array.isArray(x)) {
-			result = x.map(elm => {
-				const instance = new ctor();
-				Object.assign(instance, elm);
-				return instance;
-			});
-		} else {
-			result = new ctor();
-			Object.assign(result, x);
-			return result;
-		}
-		return result;
 	}
 
 	private handleError(error: HttpErrorResponse) {

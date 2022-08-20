@@ -54,6 +54,9 @@ body {
 .newlined {
 	white-space: pre-wrap;
 }
+.code {
+	font-family: monospace;
+}
 /* SCROLLBAR */
 ::-webkit-scrollbar {
 	width: 10px;
@@ -67,4 +70,32 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
 	background: #999;
+}
+// MATERIAL COSTOMIZATION
+mat-card-actions button {
+	margin: 0 0.5em 0 0 !important;
+}
+mat-card-actions[align='end'] button {
+	margin: 0 0 0 0.5em !important;
+}
+.mat-card-header {
+	gap: 16px;
+}
+.mat-card-header-text {
+	margin: 0 !important;
+}
+.mat-tooltip {
+	line-height: 1.4em !important;
+}
+.mat-icon {
+	transform: translateY(-1.5px);
+}
+
+// mat-expansion fix for https://github.com/angular/components/issues/20002
+.mat-content:only-child {
+	margin-right: 8px;
+}
+.mat-expansion-panel-header-title,
+.mat-expansion-panel-header-description {
+	flex-basis: 0;
 }

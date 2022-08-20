@@ -1,14 +1,13 @@
 .grid {
-	margin: 5em;
 	display: grid;
-	grid-template-columns: repeat(auto-fill, 300px);
+	grid-template-columns: repeat(auto-fill, 24em);
 	justify-content: center;
 	align-items: end;
-	grid-auto-rows: 200px;
+	// grid-auto-rows: 200px;
 	gap: 2em;
-	padding: 2em;
 	.createButton {
-		height: 10em;
+		min-height: 10em;
+		height: -webkit-fill-available;
 		mat-icon {
 			transform: scale(2.2);
 		}

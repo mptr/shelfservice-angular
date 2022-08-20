@@ -17,6 +17,8 @@ import { MessageItemComponent } from './messages/message-item/message-item.compo
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ShelfModule } from '../shelf/shelf.module';
 import { WorkflowModule } from '../workflow/workflow.module';
+import { MAT_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
+import { WorkflowLogModule } from '../workflow-log/workflow-log.module';
 
 @NgModule({
 	declarations: [
@@ -34,6 +36,7 @@ import { WorkflowModule } from '../workflow/workflow.module';
 		AuthModule,
 		ShelfModule,
 		WorkflowModule,
+		WorkflowLogModule,
 		MatSidenavModule,
 		MatIconModule,
 		MatCardModule,
@@ -41,7 +44,16 @@ import { WorkflowModule } from '../workflow/workflow.module';
 		MatToolbarModule,
 		MatButtonModule,
 	],
-	providers: [],
+	providers: [
+		{
+			provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+			useValue: {
+				showDelay: 500,
+				hideDelay: 0,
+				touchendHideDelay: 0,
+			},
+		},
+	],
 	bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,0 +1,12 @@
+table {
+	text-align: left;
+	padding: 0.5em;
+	th,
+	td {
+		padding: 0 1em 0 0;
+	}
+}
+p {
+	max-height: 50vh;
+	overflow-x: auto;
+}

@@ -8,13 +8,29 @@
 		<p>{{ workflow.description }}</p>
 	</mat-card-content>
 	<mat-card-actions align="end">
-		<button mat-button (click)="details()">
-			<mat-icon class="material-icons-outlined">info</mat-icon>
-			Details
+		<button mat-icon-button (click)="bookmark()" matTooltip="Lesezeichen hinzufügen">
+			<mat-icon>bookmark_outline</mat-icon>
 		</button>
-		<button mat-flat-button [routerLink]="[workflow.id]" color="primary">
-			<ng-container *ngIf="workflow.hasParams"><mat-icon>edit_note</mat-icon> Konfigurieren</ng-container>
-			<ng-container *ngIf="!workflow.hasParams"> <mat-icon>play_arrow</mat-icon> Starten</ng-container>
+		<button mat-button (click)="details()" matTooltip="Informationen zum Workflow">
+			<mat-icon class="material-icons-outlined">info</mat-icon> &nbsp;Details
+		</button>
+		<button
+			mat-flat-button
+			*ngIf="workflow.hasParams"
+			[routerLink]="[workflow.id, 'runs', 'new']"
+			color="primary"
+			matTooltip="Zur Eingabe der Workflow Parameter"
+		>
+			<mat-icon>edit_note</mat-icon> Konfigurieren
+		</button>
+		<button
+			mat-flat-button
+			*ngIf="!workflow.hasParams"
+			[routerLink]="[workflow.id, 'runs', 'new']"
+			color="primary"
+			matTooltip="Startet den Workflow"
+		>
+			<mat-icon>play_arrow</mat-icon> Starten
 		</button>
 	</mat-card-actions>
 </mat-card>

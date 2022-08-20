@@ -3,20 +3,14 @@
 	<mat-stepper orientation="vertical" #stepper>
 		<mat-step label="Workflow-Typ" state="kind">
 			<div class="formStep">
-				<div class="kindSelect full">
+				<div class="kindSelect">
 					<button
+						*ngFor="let t of workflowTypes"
 						mat-stroked-button
-						[ngClass]="{ selected: kindControl.value === 'kubernetes' }"
-						(click)="kindControl.setValue('kubernetes')"
+						[ngClass]="{ selected: kindControl.value === t }"
+						(click)="kindControl.setValue(t)"
 					>
-						Kubernetes
-					</button>
-					<button
-						mat-stroked-button
-						[ngClass]="{ selected: kindControl.value === 'webworker' }"
-						(click)="kindControl.setValue('webworker')"
-					>
-						WebWorker
+						{{ getReadableType(t) }}
 					</button>
 				</div>
 			</div>
@@ -28,7 +22,7 @@
 		</mat-step>
 		<ng-container *ngIf="wf" [formGroup]="wf">
 			<mat-step label="Metadaten" state="metadata">
-				<div class="formStep">
+				<div class="formStep twoCol">
 					<mat-form-field appearance="fill">
 						<mat-label>Name</mat-label>
 						<input matInput formControlName="name" required />
@@ -52,15 +46,15 @@
 					<button mat-button matStepperPrevious><mat-icon>keyboard_arrow_up</mat-icon></button>
 				</div>
 			</mat-step>
-			<mat-step label="Konfiguration" *ngIf="isKubernetes(wf)" state="config">
+			<mat-step label="Konfiguration" *ngIf="isKubernetesFg(wf)" state="config">
 				<div class="formStep">
-					<mat-form-field class="full" appearance="fill">
+					<mat-form-field appearance="fill">
 						<mat-label>Image</mat-label>
 						<input matInput placeholder="docker-release..." formControlName="image" />
 						<mat-hint>Docker-Tag</mat-hint>
 					</mat-form-field>
 					<br />
-					<div class="full">
+					<div>
 						<p *ngIf="wf.ctls.command.controls.length === 0">Startbefehl: Standard des angegebenen Images</p>
 						<mat-form-field
 							appearance="fill"
@@ -74,7 +68,7 @@
 							<mat-hint *ngIf="i === 0">Startbefehl</mat-hint>
 						</mat-form-field>
 					</div>
-					<button class="full center" mat-stroked-button (click)="wf.pushCommand()">
+					<button class="center" mat-stroked-button (click)="wf.pushCommand()">
 						<mat-icon>add</mat-icon>
 						{{ wf.ctls.command.controls.length === 0 ? 'Startbefehl anpassen' : 'Befehlsteil hinzufügen' }}
 					</button>
@@ -87,28 +81,30 @@
 				</div>
 			</mat-step>
 			<mat-step label="Parameterisierung" state="parameterization">
-				<mat-accordion>
-					<mat-expansion-panel *ngFor="let ctl of wf.ctls.parameterFields.controls; let i = index" [formGroup]="ctl">
-						<mat-expansion-panel-header>
-							<mat-panel-title *ngIf="ctl.value.displayName">{{ ctl.value.displayName }}</mat-panel-title>
-							<mat-panel-title *ngIf="!ctl.value.displayName"><i>unbenannter Parameter</i></mat-panel-title>
-						</mat-expansion-panel-header>
-						<div class="grid">
-							<app-param-edit [ctl]="ctl"></app-param-edit>
-							<div class="previewContainer">
-								<p><i>Vorschau:</i></p>
-								<p class="newlined">{{ ctl.value.description }}</p>
-								<app-param-input [ctl]="previewControls[i]"></app-param-input>
+				<div class="formStep">
+					<mat-accordion>
+						<mat-expansion-panel *ngFor="let ctl of wf.ctls.parameterFields.controls; let i = index" [formGroup]="ctl">
+							<mat-expansion-panel-header>
+								<mat-panel-title *ngIf="ctl.value.displayName">{{ ctl.value.displayName }}</mat-panel-title>
+								<mat-panel-title *ngIf="!ctl.value.displayName"><i>unbenannter Parameter</i></mat-panel-title>
+							</mat-expansion-panel-header>
+							<div class="grid">
+								<app-param-edit [ctl]="ctl"></app-param-edit>
+								<div class="previewContainer">
+									<p><i>Vorschau:</i></p>
+									<p class="newlined">{{ ctl.value.description }}</p>
+									<app-param-input [ctl]="previewControls[i]"></app-param-input>
+								</div>
 							</div>
-						</div>
-						<mat-action-row>
-							<button mat-button color="warn" (click)="wf.ctls.parameterFields.removeAt(i)">Parameter Löschen</button>
-						</mat-action-row>
-					</mat-expansion-panel>
-				</mat-accordion>
-				<button mat-stroked-button (click)="addParam()" class="center">
-					<mat-icon>add</mat-icon> Parameter hinzufügen
-				</button>
+							<mat-action-row>
+								<button mat-button color="warn" (click)="wf.ctls.parameterFields.removeAt(i)">Parameter Löschen</button>
+							</mat-action-row>
+						</mat-expansion-panel>
+					</mat-accordion>
+					<button mat-stroked-button (click)="addParam()" class="center">
+						<mat-icon>add</mat-icon> Parameter hinzufügen
+					</button>
+				</div>
 				<div class="actions">
 					<button mat-button matStepperNext [disabled]="!wf.ctls.parameterFields.valid">
 						<mat-icon>keyboard_arrow_down</mat-icon> weiter
@@ -121,10 +117,10 @@
 					<p>Eingabedaten ungültig.<br />Bitte Fehler im Formular korrigieren um zu speichern.</p>
 				</div>
 				<div class="formStep" *ngIf="wf.valid && kindControl.valid">
-					<table class="full">
+					<table>
 						<tr>
 							<th>Workflow-Typ</th>
-							<td>{{ isKubernetes(wf) ? 'Kubernetes' : 'WebWorker' }}</td>
+							<td>{{ isKubernetesFg(wf) ? 'Kubernetes' : 'WebWorker' }}</td>
 						</tr>
 						<tr>
 							<th>Name</th>
@@ -134,16 +130,16 @@
 							<th>Beschreibung</th>
 							<td>{{ wf.value.description }}</td>
 						</tr>
-						<tr *ngIf="isKubernetes(wf)">
+						<tr *ngIf="isKubernetesFg(wf)">
 							<th>Docker-Image</th>
 							<td>
 								<code>{{ wf.value.image }}</code>
 							</td>
 						</tr>
-						<tr *ngIf="isKubernetes(wf)">
+						<tr *ngIf="isKubernetesFg(wf)">
 							<th>Startbefehl</th>
-							<td *ngIf="wf.ctls.command.value.length > 0">
-								<code>{{ wf.ctls.command.value | json }}</code>
+							<td *ngIf="wf.ctls.command.value.length > 0" class="code">
+								{{ wf.ctls.command.value | json }}
 							</td>
 							<td *ngIf="wf.ctls.command.value.length === 0"><i>standard</i></td>
 						</tr>

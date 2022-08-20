@@ -1,9 +1,10 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SetParameters, SetParameterFormControl } from 'src/modules/parameter/entities';
+import { WorkflowRun } from 'src/modules/workflow-log/workflow-run';
 import { RestService } from 'src/services/rest/rest.service';
-import { Parameter, SetParameterFormControl, SetParameters } from '../../parameter/parameter';
-import { WorkflowDefinition } from '../workflow-definition';
+import { WorkflowDefinition } from '../entities';
 
 @Component({
 	selector: 'app-workflow-run-configure',
@@ -13,17 +14,18 @@ import { WorkflowDefinition } from '../workflow-definition';
 export class WorkflowRunConfigureComponent implements OnInit {
 	constructor(
 		private readonly activatedRoute: ActivatedRoute,
+		private readonly router: Router,
 		private readonly rest: RestService,
 		private readonly location: Location,
 	) {}
 
-	wfId?: string;
+	wfId?: string | null;
 	wf?: WorkflowDefinition;
 
 	paramForm?: SetParameters;
 
 	ngOnInit(): void {
-		this.wfId = this.activatedRoute.snapshot.url[0].path;
+		this.wfId = this.activatedRoute.snapshot.paramMap.get('id');
 		if (!this.wfId) throw new Error('wfId missing');
 
 		this.rest.new
@@ -31,9 +33,7 @@ export class WorkflowRunConfigureComponent implements OnInit {
 			.getOne(this.wfId)
 			.then(fetched => {
 				this.wf = fetched;
-				this.paramForm = new SetParameters(
-					this.wf.parameterFields?.map(p => new SetParameterFormControl(Parameter.factory(p.kind).accept(p))) || [],
-				);
+				this.paramForm = new SetParameters(this.wf.parameterFields?.map(p => new SetParameterFormControl(p)) || []);
 				console.log(this.paramForm);
 			});
 	}
@@ -45,9 +45,9 @@ export class WorkflowRunConfigureComponent implements OnInit {
 		this.rest.new
 			.navigate('workflows')
 			.navigate(this.wfId)
-			.navigate('runs', Object)
+			.navigate('runs', WorkflowRun)
 			.post(this.paramForm.configObject)
-			.then(console.log);
+			.then(r => this.router.navigate(['shelf', this.wfId, 'runs', r.id]));
 	}
 
 	cancel() {

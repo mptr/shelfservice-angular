@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RestService } from 'src/services/rest/rest.service';
-import { WorkflowDefinitionList } from '../../workflow/workflow-definition';
+import { WorkflowDefinitionList } from '../../workflow/entities';
 
 @Component({
 	selector: 'app-shelf-list',

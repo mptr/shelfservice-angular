@@ -1,6 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { WorkflowDefinitionList } from '../../workflow/workflow-definition';
+import { Router } from '@angular/router';
+import { RestService } from 'src/services/rest/rest.service';
+import { WorkflowDefinitionList } from '../../workflow/entities';
 import { ShelfItemDetailsDialogComponent } from '../shelf-item-details/shelf-item-details.dialog';
 
 @Component({
@@ -12,7 +14,14 @@ export class ShelfItemComponent {
 	@Input()
 	workflow!: WorkflowDefinitionList;
 
-	constructor(private readonly dialog: MatDialog) {}
+	@Output()
+	remove = new EventEmitter();
+
+	constructor(
+		private readonly dialog: MatDialog,
+		private readonly router: Router,
+		private readonly rest: RestService,
+	) {}
 
 	get ownerNames() {
 		return this.workflow.owners?.map(o => o.given_name?.substring(0, 1) + ' ' + o.family_name).join(', ');
@@ -25,10 +34,31 @@ export class ShelfItemComponent {
 				data: this.workflow,
 			})
 			.afterClosed()
-			.subscribe(result => {
-				// if (!result) return;
-				console.log(result);
-				// this.wf.ctls.parameterFields.push(Parameter.factory(result).formGroup());
+			.subscribe(({ action }) => {
+				switch (action) {
+					case 'remove':
+						if (!this.workflow.id) return; // TODO: ERROR
+						this.rest.new
+							.navigate('workflows')
+							.delete(this.workflow.id)
+							.then(() => this.remove.emit());
+						break;
+					case 'start':
+						this.router.navigate(['/shelf', this.workflow.id, 'runs', 'new']);
+						break;
+					case 'logs':
+						this.router.navigate(['/shelf', this.workflow.id, 'runs']);
+						break;
+					case 'edit':
+						this.router.navigate(['/shelf', this.workflow.id]);
+						break;
+					default:
+						return; // TODO: ERROR
+				}
 			});
+	}
+
+	bookmark() {
+		return null; // TODO
 	}
 }

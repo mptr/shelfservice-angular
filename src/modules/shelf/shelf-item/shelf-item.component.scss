@@ -1,11 +1,11 @@
 mat-card {
 	height: fit-content;
-}
-::ng-deep {
-	.mat-card-header {
-		gap: 16px;
-	}
-	.mat-card-header-text {
-		margin: 0 !important;
+	p {
+		height: 3em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 2; /* number of lines to show */
+		-webkit-box-orient: vertical;
 	}
 }

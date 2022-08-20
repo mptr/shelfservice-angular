@@ -1,0 +1,38 @@
+<h2>
+	Workflow-Protokoll: {{ wf?.name }}
+	<button mat-icon-button (click)="openWfDetails()"><mat-icon class="material-icons-outlined">info</mat-icon></button>
+</h2>
+<mat-accordion class="example-headers-align" multi>
+	<mat-expansion-panel *ngFor="let r of runs">
+		<mat-expansion-panel-header>
+			<mat-panel-title> Personal data </mat-panel-title>
+			<mat-panel-description>
+				<span
+					><ng-container *ngIf="r.startedAt">
+						{{ r.startedAt | date: 'dd.mm.YY HH:mm:ss' }} (vor
+						{{ r.startedAt | dateAgo: 'dd.mm.YY HH:mm:ss' }})</ng-container
+					></span
+				>
+				<ng-container [ngSwitch]="r.status">
+					<mat-icon *ngSwitchCase="'prepared'" matTooltipPosition="left" matTooltip="Vorbereitet">pending</mat-icon>
+					<mat-icon
+						*ngSwitchCase="'running'"
+						matTooltipPosition="left"
+						matTooltip="In Arbeit"
+						class="rotateAnimate"
+						color="primary"
+						>sync</mat-icon
+					>
+					<mat-icon *ngSwitchCase="'success'" matTooltipPosition="left" matTooltip="Erfolgreich" class="green"
+						>done_all</mat-icon
+					>
+					<mat-icon *ngSwitchCase="'failure'" matTooltipPosition="left" matTooltip="Fehler" class="red">error</mat-icon>
+				</ng-container>
+			</mat-panel-description>
+		</mat-expansion-panel-header>
+	</mat-expansion-panel>
+</mat-accordion>
+<p *ngFor="let r of runs; let i = index">
+	<a *ngIf="i === 0" [routerLink]="[r.id]" class="code newlined">{{ stripIco(r) | json }}</a
+	><br />
+</p>

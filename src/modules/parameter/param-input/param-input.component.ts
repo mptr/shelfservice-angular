@@ -1,12 +1,13 @@
 import { Component, Input } from '@angular/core';
-import { ParamInstanceTestable, SetParameterFormControl } from '../parameter';
+import { ParameterHelpers } from '../parameter.helpers';
+import { SetParameterFormControl } from '../entities/setParameter.entity';
 
 @Component({
 	selector: 'app-param-input',
 	templateUrl: './param-input.component.html',
 	styleUrls: ['./param-input.component.scss'],
 })
-export class ParamInputComponent extends ParamInstanceTestable {
+export class ParamInputComponent extends ParameterHelpers {
 	@Input()
 	ctl?: SetParameterFormControl;
 

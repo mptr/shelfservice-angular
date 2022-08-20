@@ -1,13 +1,14 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import { ENTER } from '@angular/cdk/keycodes';
-import { FormGroupedParameter, ParamInstanceTestable } from '../parameter';
+import { ParameterHelpers } from '../parameter.helpers';
+import { FormGroupedParameter } from '../entities';
 
 @Component({
 	selector: 'app-param-edit',
 	templateUrl: './param-edit.component.html',
 	styleUrls: ['./param-edit.component.scss'],
 })
-export class ParamEditComponent extends ParamInstanceTestable {
+export class ParamEditComponent extends ParameterHelpers {
 	@ViewChild('optInput') optInput!: { nativeElement: HTMLInputElement };
 
 	@Input()

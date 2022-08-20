@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { parameterIcons, ParameterType } from '../parameter';
+import { Parameter, ParameterType } from '../entities';
 
 @Component({
 	selector: 'app-add-parameter-dialog',
@@ -66,7 +66,7 @@ export class AddParameterDialogComponent {
 		},
 	].map(x => ({
 		...x,
-		icon: parameterIcons[x.kind],
+		icon: Parameter.ctor(x.kind).iconName,
 	}));
 
 	select(pType: ParameterType): void {

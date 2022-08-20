@@ -3,7 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { ShelfListComponent } from '../shelf/shelf-list/shelf-list.component';
 import { WorkflowEditComponent } from '../workflow/workflow-edit/workflow-edit.component';
 import { WorkflowRunConfigureComponent } from '../workflow/workflow-run-configure/workflow-run-configure.component';
-import { WorkflowRunStatusComponent } from '../workflow/workflow-run-status/workflow-run-status.component';
+import { WorkflowRunStatusComponent } from '../workflow-log/workflow-run-status/workflow-run-status.component';
+import { WorkflowLogComponent } from '../workflow-log/workflow-log/workflow-log.component';
 
 const routes: Routes = [
 	{
@@ -13,12 +14,15 @@ const routes: Routes = [
 			{ path: 'new', component: WorkflowEditComponent },
 			{
 				path: ':id',
-				component: WorkflowRunConfigureComponent,
 				children: [
+					{ path: '', component: WorkflowEditComponent },
 					{
 						path: 'runs',
-						// component: WorkflowRunLogComponent, // TODO: Implement
-						children: [{ path: ':id', component: WorkflowRunStatusComponent }],
+						children: [
+							{ path: '', component: WorkflowLogComponent },
+							{ path: 'new', component: WorkflowRunConfigureComponent },
+							{ path: ':runId', component: WorkflowRunStatusComponent },
+						],
 					},
 				],
 			},

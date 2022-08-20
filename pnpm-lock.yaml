@@ -27,6 +27,7 @@ specifiers:
   '@types/node': 18.0.0
   '@typescript-eslint/eslint-plugin': 5.29.0
   '@typescript-eslint/parser': 5.29.0
+  class-transformer: ^0.5.1
   commitlint: 17.0.2
   cypress: 10.2.0
   cypress-log-to-output: 1.1.2
@@ -39,6 +40,7 @@ specifiers:
   keycloak-js: 18.0.1
   lint-staged: 13.0.2
   prettier: 2.7.1
+  reflect-metadata: ^0.1.13
   rxjs: 7.5.5
   semantic-release: 19.0.3
   tslib: 2.4.0
@@ -57,8 +59,10 @@ dependencies:
   '@angular/platform-browser': 14.0.3_5axzenb7oyll2rf2x4hbd2xcgq
   '@angular/platform-browser-dynamic': 14.0.3_y345ctpye26r3jjhattl22t2tm
   '@angular/router': 14.0.3_vrcy5tkw7nvoiq5islshxpfw4m
+  class-transformer: 0.5.1
   keycloak-angular: 10.0.1_fjw7e34xrc6m5ppjewrjagcn5e
   keycloak-js: 18.0.1
+  reflect-metadata: 0.1.13
   rxjs: 7.5.5
   tslib: 2.4.0
   zone.js: 0.11.6
@@ -4409,6 +4413,10 @@ packages:
   /cjs-module-lexer/1.2.2:
     resolution: {integrity: sha512-cOU9usZw8/dXIXKtwa8pM0OTJQuJkxMN6w30csNRUerHfeQ5R6U3kkU/FtJeIf3M202OHfY2U8ccInBG7/xogA==}
     dev: true
+
+  /class-transformer/0.5.1:
+    resolution: {integrity: sha512-SQa1Ws6hUbfC98vKGxZH3KFY0Y1lm5Zm0SY8XX9zbK7FJCyVEac3ATW0RIpwzW+oOfmHE5PMPufDG9hCfoEOMw==}
+    dev: false
 
   /clean-stack/2.2.0:
     resolution: {integrity: sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==}
@@ -10009,7 +10017,6 @@ packages:
 
   /reflect-metadata/0.1.13:
     resolution: {integrity: sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==}
-    dev: true
 
   /regenerate-unicode-properties/10.0.1:
     resolution: {integrity: sha512-vn5DU6yg6h8hP/2OkQo3K7uVILvY4iu0oI4t3HFa81UPkhGJwkRwM10JEc3upjdhHjs/k8GJY1sRBhk5sr69Bw==}
