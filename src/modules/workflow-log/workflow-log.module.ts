@@ -12,10 +12,10 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { WorkflowModule } from '../workflow/workflow.module';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { DateAgoPipe } from 'src/pipes/date-ago.pipe';
+import { DateRelativePipe } from 'src/pipes/date-relative.pipe';
 
 @NgModule({
-	declarations: [WorkflowRunStatusComponent, WorkflowLogComponent, DateAgoPipe],
+	declarations: [WorkflowRunStatusComponent, WorkflowLogComponent, DateRelativePipe],
 	imports: [
 		CommonModule,
 		RouterModule,

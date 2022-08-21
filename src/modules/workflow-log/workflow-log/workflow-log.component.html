@@ -9,8 +9,7 @@
 			<mat-panel-description>
 				<span
 					><ng-container *ngIf="r.startedAt">
-						{{ r.startedAt | date: 'dd.mm.YY HH:mm:ss' }} (vor
-						{{ r.startedAt | dateAgo: 'dd.mm.YY HH:mm:ss' }})</ng-container
+						{{ r.startedAt | date: 'short' }} ({{ r.startedAt | dateRelative: 2 }})</ng-container
 					></span
 				>
 				<ng-container [ngSwitch]="r.status">

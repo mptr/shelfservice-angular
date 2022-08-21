@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -19,6 +19,12 @@ import { ShelfModule } from '../shelf/shelf.module';
 import { WorkflowModule } from '../workflow/workflow.module';
 import { MAT_TOOLTIP_DEFAULT_OPTIONS } from '@angular/material/tooltip';
 import { WorkflowLogModule } from '../workflow-log/workflow-log.module';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
+
+import { registerLocaleData } from '@angular/common';
+import localeDe from '@angular/common/locales/de';
+import localeDeExtra from '@angular/common/locales/extra/de';
+registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
 @NgModule({
 	declarations: [
@@ -45,6 +51,8 @@ import { WorkflowLogModule } from '../workflow-log/workflow-log.module';
 		MatButtonModule,
 	],
 	providers: [
+		{ provide: MAT_DATE_LOCALE, useValue: 'de-DE' },
+		{ provide: LOCALE_ID, useValue: 'de-DE' },
 		{
 			provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
 			useValue: {
