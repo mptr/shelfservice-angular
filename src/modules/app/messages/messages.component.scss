@@ -4,10 +4,14 @@
 	right: 0;
 	mat-card {
 		margin: 0 1em 1em;
-		display: flex;
-		justify-content: space-between;
-		div {
-			margin-right: 3em;
+		display: grid;
+		grid-template-columns: auto min-content;
+		gap: 0 0.5em;
+		button {
+			transform: translate(5px, -5px);
+		}
+		.wide {
+			grid-column: 1 / span 2;
 		}
 		mat-card-subtitle {
 			margin-bottom: 0;
@@ -25,10 +29,10 @@
 			background-color: #ffe9d3;
 		}
 		&.info {
-			border: #009688 2.5px solid;
-			background-color: #c8fffa;
+			border: var(--primary-color) 2.5px solid;
+			background-color: #ffffff;
 		}
 	}
-	width: 30em;
+	width: 40em;
 	max-width: 80vw;
 }

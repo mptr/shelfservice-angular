@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/modules/auth/auth.service';
 import { User } from 'src/modules/auth/user.entity';
 import { RestService } from 'src/services/rest/rest.service';
 import { WorkflowDefinitionList } from '../../workflow/entities';
@@ -11,11 +10,11 @@ import { WorkflowDefinitionList } from '../../workflow/entities';
 	styleUrls: ['./shelf-list.component.scss'],
 })
 export class ShelfListComponent implements OnInit {
-	constructor(readonly router: Router, private readonly rest: RestService, private readonly auth: AuthService) {}
+	constructor(readonly router: Router, private readonly rest: RestService) {}
 
 	async ngOnInit() {
 		this.workflows = await this.rest.new.navigate('workflows', WorkflowDefinitionList).getAll();
-		this.currentUser = await this.auth.currentUser();
+		this.currentUser = await this.rest.new.navigate('users', User).getOne('self');
 	}
 
 	workflows: WorkflowDefinitionList[] = [];

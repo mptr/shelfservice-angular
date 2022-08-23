@@ -24,18 +24,14 @@ export class WorkflowRunConfigureComponent implements OnInit {
 
 	paramForm?: SetParameters;
 
-	ngOnInit(): void {
+	async ngOnInit() {
 		this.wfId = this.activatedRoute.snapshot.paramMap.get('id');
 		if (!this.wfId) throw new Error('wfId missing');
 
-		this.rest.new
-			.navigate('workflows', WorkflowDefinition)
-			.getOne(this.wfId)
-			.then(fetched => {
-				this.wf = fetched;
-				this.paramForm = new SetParameters(this.wf.parameterFields?.map(p => new SetParameterFormControl(p)) || []);
-				console.log(this.paramForm);
-			});
+		this.wf = await this.rest.new.navigate('workflows', WorkflowDefinition).getOne(this.wfId);
+		this.paramForm = new SetParameters(this.wf.parameterFields?.map(p => new SetParameterFormControl(p)) || []);
+
+		if (!this.wf.hasParams) this.start();
 	}
 
 	start() {

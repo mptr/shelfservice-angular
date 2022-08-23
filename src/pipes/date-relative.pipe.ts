@@ -10,7 +10,7 @@ const MONTH = 30 * DAY;
 const YEAR = 365 * DAY;
 
 abstract class RelativeDateFormatter {
-	abstract format(delta: number, short: boolean, precision: number): string;
+	abstract format(delta: number, short: boolean, precision: number, prefix: boolean): string;
 }
 class DErelativeDateFormatter extends RelativeDateFormatter {
 	private readonly config = [
@@ -33,7 +33,7 @@ class DErelativeDateFormatter extends RelativeDateFormatter {
 		return count + label.toLowerCase()[0];
 	}
 
-	format(delta: number, short: boolean, precision: number): string {
+	format(delta: number, short: boolean, precision: number, prefix: boolean): string {
 		const result: string[] = [];
 		let captureFromIndex: undefined | number = undefined;
 		for (let i = 0; i < this.config.length; i++) {
@@ -47,7 +47,7 @@ class DErelativeDateFormatter extends RelativeDateFormatter {
 				delta -= count * c.value;
 			}
 		}
-		return (delta < 0 ? 'in' : 'vor') + ' ' + result.join(', ');
+		return (prefix ? (delta < 0 ? 'in' : 'vor') : '') + ' ' + result.join(', ');
 	}
 }
 
@@ -76,6 +76,7 @@ export class DateRelativePipe implements PipeTransform, OnDestroy {
 	private date = 0;
 	private value = '';
 	private short = false;
+	private doPrefix = true;
 	private precision = 3;
 	private clockSubscription: Subscription | null = null;
 	stateChanges = new Subject<void>();
@@ -84,7 +85,7 @@ export class DateRelativePipe implements PipeTransform, OnDestroy {
 
 	constructor(cd: ChangeDetectorRef) {
 		this.stateChanges.subscribe(() => {
-			this.value = this.formatter.format(Date.now() - this.date, this.short, this.precision);
+			this.value = this.formatter.format(Date.now() - this.date, this.short, this.precision, this.doPrefix);
 			cd.markForCheck();
 		});
 	}
@@ -95,12 +96,13 @@ export class DateRelativePipe implements PipeTransform, OnDestroy {
 		this.stateChanges.complete();
 	}
 
-	transform(value?: Date | string, ...args: ('short' | number)[]): string {
+	transform(value?: Date | string, ...args: ('short' | 'no-prefix' | number)[]): string {
 		const _date = new Date(value ?? 0).valueOf();
 
 		args.forEach(arg => {
 			if (typeof arg === 'string') {
 				if (arg === 'short') this.short = true;
+				if (arg === 'no-prefix') this.doPrefix = false;
 			} else {
 				this.precision = arg;
 			}

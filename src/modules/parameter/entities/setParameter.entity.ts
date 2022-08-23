@@ -20,6 +20,8 @@ export class SetParameter {
 	@Accept()
 	value = '';
 	@Accept()
+	hide = false;
+	@Accept()
 	description = '';
 }
 

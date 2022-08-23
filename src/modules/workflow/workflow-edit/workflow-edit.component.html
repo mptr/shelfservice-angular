@@ -1,4 +1,18 @@
-<h2>Workflow bearbeiten</h2>
+<h2>
+	<div class="topbar">
+		Workflow bearbeiten
+		<button mat-stroked-button (click)="importJsonFile.click()">
+			<mat-icon class="material-icons-outlined">sim_card_download</mat-icon> Importieren
+		</button>
+		<input
+			type="file"
+			#importJsonFile
+			(change)="importJsonFileChange($event)"
+			style="display: none"
+			accept="application/json"
+		/>
+	</div>
+</h2>
 <mat-card>
 	<mat-stepper orientation="vertical" #stepper linear>
 		<mat-step [stepControl]="kindControl" label="Workflow-Typ" state="kind">
@@ -195,3 +209,10 @@
 		</ng-template>
 	</mat-stepper>
 </mat-card>
+<br />
+<h2>
+	<div class="topbar">
+		<span></span>
+		<button mat-stroked-button (click)="exportJson()"><mat-icon>file_download</mat-icon> Exportieren</button>
+	</div>
+</h2>

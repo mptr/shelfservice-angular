@@ -11,8 +11,10 @@ import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { WorkflowModule } from '../workflow/workflow.module';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { DateRelativePipe } from 'src/pipes/date-relative.pipe';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
 	declarations: [WorkflowRunStatusComponent, WorkflowLogComponent, DateRelativePipe],
@@ -27,7 +29,9 @@ import { DateRelativePipe } from 'src/pipes/date-relative.pipe';
 		MatCheckboxModule,
 		MatInputModule,
 		WorkflowModule,
-		MatExpansionModule,
+		MatTableModule,
+		MatPaginatorModule,
+		MatSortModule,
 	],
 })
 export class WorkflowLogModule {}

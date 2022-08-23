@@ -1,6 +1,9 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { KubernetesWorkflowDefinition, WebWorkerWorkflowDefinition } from 'src/modules/workflow/entities';
+import { Message } from 'src/services/message/Message';
+import { MessageService } from 'src/services/message/message.service';
 import { RestService } from 'src/services/rest/rest.service';
 import { WorkflowRun } from '../workflow-run';
 
@@ -9,7 +12,7 @@ import { WorkflowRun } from '../workflow-run';
 	templateUrl: './workflow-run-status.component.html',
 	styleUrls: ['./workflow-run-status.component.scss'],
 })
-export class WorkflowRunStatusComponent implements OnInit, AfterViewInit {
+export class WorkflowRunStatusComponent implements OnInit, AfterViewInit, OnDestroy {
 	@ViewChild('console')
 	private consoleWindow!: ElementRef;
 	private consoleElement?: HTMLElement;
@@ -18,24 +21,32 @@ export class WorkflowRunStatusComponent implements OnInit, AfterViewInit {
 		private readonly route: ActivatedRoute,
 		private readonly rest: RestService,
 		private readonly changeDetector: ChangeDetectorRef,
+		private readonly messageService: MessageService,
 	) {}
 
 	ngAfterViewInit(): void {
 		this.consoleElement = this.consoleWindow.nativeElement;
 		if (!this.consoleElement) return;
 		this.consoleElement.onscroll = () => {
-			console.log(this.isProgramaticScroll);
 			if (!this.isProgramaticScroll) this.stick = false;
 			this.isProgramaticScroll = false;
 		};
 	}
 
+	wfId: string | null = null;
+	runId: string | null = null;
 	run?: WorkflowRun;
-
 	logs: string[] = [];
+	logSubscription: Subscription | null = null;
 
 	ngOnInit() {
-		return this.updateWfData();
+		this.wfId = this.route.snapshot.paramMap.get('id');
+		this.runId = this.route.snapshot.paramMap.get('runId');
+		this.updateWfData().then(() => this.initiateLogStream());
+	}
+
+	ngOnDestroy(): void {
+		if (this.logSubscription) this.logSubscription.unsubscribe();
 	}
 
 	isProgramaticScroll = false;
@@ -49,53 +60,57 @@ export class WorkflowRunStatusComponent implements OnInit, AfterViewInit {
 		});
 	}
 
-	private updateInterval?: ReturnType<typeof setTimeout>;
-	private updateRunSince() {
-		if (!this.run?.startedAt) return;
-		const delta = Math.floor((Date.now() - new Date(this.run.startedAt).getTime()) / 1000);
-		const labels = ['d', 'h', 'm', 's'];
-		const ds = [Math.floor(delta / 86400), Math.floor(delta / 3600), Math.floor(delta / 60), delta % 60];
-		this.runSince = ds
-			.reduce((acc, cur, i) => {
-				if (cur === 0) return acc;
-				return acc + cur + labels[i] + ' ';
-			}, '')
-			.trim();
-	}
-
 	async updateWfData() {
-		const wfId = this.route.snapshot.paramMap.get('id');
-		const runId = this.route.snapshot.paramMap.get('runId');
-		if (!runId || !wfId) return; // TODO message service
-		const rest = this.rest.new.navigate('workflows').navigate(wfId).navigate('runs', WorkflowRun);
-		this.run = await rest.getOne(runId).then(r => {
-			const tmp =
-				r.workflowDefinition?.kind === 'webworker'
-					? new WebWorkerWorkflowDefinition()
-					: new KubernetesWorkflowDefinition();
-			Object.assign(tmp, r.workflowDefinition);
-			r.workflowDefinition = tmp;
-			return r;
-		});
-
-		this.updateRunSince();
-		clearInterval(this.updateInterval);
-		this.updateInterval = setInterval(() => this.updateRunSince(), 1000);
-
-		rest
-			.navigate(runId)
-			.navigate('log')
-			.sse()
-			.subscribe({
-				next: msg => {
-					this.logs.push(msg);
-					this.changeDetector.detectChanges();
-					if (this.stick) this.scroll('down', true);
-				},
-				error: err => console.error(err), // TODO message service
-				complete: () => console.log('complete'), // TODO message service
+		if (!this.runId || !this.wfId) {
+			this.messageService.push(new Message('Fehler', 'Keine Run-ID für den geöffneten Workflow gefunden', 'error'));
+			return;
+		}
+		this.run = await this.rest.new
+			.navigate('workflows')
+			.navigate(this.wfId)
+			.navigate('runs', WorkflowRun)
+			.getOne(this.runId)
+			.then(r => {
+				const tmp =
+					r.workflowDefinition?.kind === 'webworker'
+						? new WebWorkerWorkflowDefinition()
+						: new KubernetesWorkflowDefinition();
+				Object.assign(tmp, r.workflowDefinition);
+				r.workflowDefinition = tmp;
+				return r;
 			});
 	}
 
-	runSince = '';
+	async initiateLogStream() {
+		if (!this.runId || !this.wfId) {
+			this.messageService.push(new Message('Fehler', 'Keine Run-ID für den geöffneten Workflow gefunden', 'error'));
+			return;
+		}
+		const logSource = await this.rest.new
+			.navigate('workflows')
+			.navigate(this.wfId)
+			.navigate('runs', WorkflowRun)
+			.navigate(this.runId)
+			.navigate('log')
+			.sse();
+		this.logSubscription = logSource.subscribe({
+			next: msg => {
+				this.logs.push(msg);
+				this.changeDetector.detectChanges();
+				if (this.stick) this.scroll('down', true);
+			},
+			complete: async () => {
+				await new Promise(r => setTimeout(r, 1000)); // sleep 1 second to let the worker finish
+				if (this.run?.finishedAt) return; // do not refresh and show message if this workflow was not running in the first place
+				this.messageService.push(
+					new Message(
+						'Workflow beendet',
+						'Der Workflow ' + this.run?.workflowDefinition?.name + ' wurde beendet.',
+						'info',
+					),
+				);
+				this.updateWfData();
+			},
+		});
+	}
 }

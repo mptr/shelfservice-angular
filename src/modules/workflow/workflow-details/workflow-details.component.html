@@ -34,12 +34,22 @@
 			</tr>
 			<tr>
 				<th>Besitzer</th>
-				<td *ngIf="wf.owners?.length">
-					<ul>
-						<li *ngFor="let o of wf.owners">{{ o.given_name }} {{ o.family_name }}</li>
-					</ul>
-				</td>
-				<td *ngIf="!wf.owners?.length"><i>unbekannt</i></td>
+				<ng-container [ngSwitch]="wf.owners?.length">
+					<td *ngSwitchCase="1">
+						<span matTooltipPosition="after" [matTooltip]="wf.owners ? wf.owners[0].preferred_username ?? '' : ''">{{
+							wf.owners ? wf.owners[0].name : ''
+						}}</span>
+					</td>
+					<td *ngSwitchCase="0"><i>keine</i></td>
+					<td *ngSwitchCase="undefined"><i>unbekannt</i></td>
+					<td *ngSwitchDefault>
+						<ul>
+							<li *ngFor="let o of wf.owners">
+								<span matTooltipPosition="after" [matTooltip]="o.preferred_username ?? ''">{{ o.name }}</span>
+							</li>
+						</ul>
+					</td>
+				</ng-container>
 			</tr>
 			<tr>
 				<th>ID</th>

@@ -10,3 +10,11 @@ p {
 	max-height: 50vh;
 	overflow-x: auto;
 }
+ul {
+	list-style-type: square;
+	margin: 0;
+	padding: 0 0 0 1.5em;
+}
+table td span {
+	width: fit-content;
+}

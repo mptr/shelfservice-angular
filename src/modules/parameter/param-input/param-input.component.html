@@ -5,12 +5,19 @@
 	</mat-checkbox>
 	<mat-form-field *ngIf="isStringParameter(parameter)" appearance="fill">
 		<mat-label>{{ parameter.displayName }}</mat-label>
-		<input *ngIf="!parameter.multiline" matInput [formControl]="ctl" [placeholder]="parameter.exampleValue || ''" />
+		<input
+			*ngIf="!parameter.multiline"
+			matInput
+			[formControl]="ctl"
+			[placeholder]="parameter.exampleValue || ''"
+			[ngClass]="{ password: parameter.password }"
+		/>
 		<textarea
 			*ngIf="parameter.multiline"
 			matInput
 			[formControl]="ctl"
 			[placeholder]="parameter.exampleValue || ''"
+			[ngClass]="{ password: parameter.password }"
 		></textarea>
 		<mat-hint>{{ parameter.hint }}</mat-hint>
 		<mat-error *ngIf="ctl.errors && ctl.errors['pattern']">

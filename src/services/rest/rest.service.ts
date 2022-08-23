@@ -5,6 +5,8 @@ import { catchError, lastValueFrom, map, Observable, of } from 'rxjs';
 import { Message } from '../message/Message';
 import { environment } from 'src/environments/environment';
 import { MessageService } from '../message/message.service';
+import { EventSourcePolyfill } from 'event-source-polyfill';
+import { AuthService } from 'src/modules/auth/auth.service';
 
 type id = string | number;
 
@@ -12,16 +14,20 @@ type id = string | number;
 	providedIn: 'root',
 })
 export class RestService {
-	constructor(private readonly http: HttpClient, private readonly msgService: MessageService) {}
+	constructor(
+		private readonly http: HttpClient,
+		private readonly auth: AuthService,
+		private readonly msgService: MessageService,
+	) {}
 	get new() {
-		return RestClient.new(this.http, this.msgService);
+		return RestClient.new(this.http, this.auth, this.msgService);
 	}
 }
 
 class RestClient<T> {
 	// public constructor
-	static new(http: HttpClient, msgService: MessageService) {
-		return new RestClient<never>(environment.apiBaseUrl, null, http, msgService);
+	static new(http: HttpClient, auth: AuthService, msgService: MessageService) {
+		return new RestClient<never>(environment.apiBaseUrl, null, http, auth, msgService);
 	}
 
 	headers = new HttpHeaders({
@@ -33,6 +39,7 @@ class RestClient<T> {
 		readonly urlPart: string,
 		private readonly parent: RestClient<unknown> | null = null,
 		private readonly http: HttpClient,
+		private readonly auth: AuthService,
 		private readonly msgService: MessageService,
 		private readonly ctor?: ClassConstructor<T>,
 	) {}
@@ -42,7 +49,7 @@ class RestClient<T> {
 	}
 
 	navigate<C = never>(str: string, ctor?: ClassConstructor<C>): RestClient<C> {
-		return new RestClient<C>(str, this, this.http, this.msgService, ctor);
+		return new RestClient<C>(str, this, this.http, this.auth, this.msgService, ctor);
 	}
 
 	post(data: Partial<T>): Promise<T> {
@@ -75,13 +82,20 @@ class RestClient<T> {
 		return this.intercept(() => this.http.delete<T>(this.url + '/' + id));
 	}
 
-	sse(): Observable<string> {
+	async sse(): Promise<Observable<string>> {
+		const t = await this.auth.authToken;
 		return new Observable(subscriber => {
-			const sse = new EventSource(this.url);
+			const sse = new EventSourcePolyfill(this.url, {
+				headers: {
+					authorization: 'Bearer ' + t,
+				},
+			});
 			sse.onmessage = e => {
 				const d = JSON.parse(e.data);
 				if (d.type === 'complete') subscriber.complete();
-				else subscriber.next(d.message);
+				else if (d.type === 'error') {
+					this.msgService.push(new Message('Fehler bei der Log-Liveübertragung', d.message, 'error'));
+				} else subscriber.next(d.message);
 			};
 			sse.onerror = e => subscriber.error(e);
 			return () => sse.close();
@@ -96,8 +110,13 @@ class RestClient<T> {
 		const observer = handler().pipe(
 			catchError((error: HttpErrorResponse) => this.handleError(error)),
 			map(x => {
-				if (this.ctor) return plainToInstance(this.ctor, x, RestClient.instanciateOptions);
+				if (this.ctor) {
+					const i = plainToInstance(this.ctor, x, RestClient.instanciateOptions);
+					console.log('Returning:', i, x);
+					return i;
+				}
 				console.warn('No ctor given for', this.url);
+				console.log('Returning:', x);
 				return x;
 			}),
 		);

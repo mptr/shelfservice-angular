@@ -24,7 +24,25 @@ import { MAT_DATE_LOCALE } from '@angular/material/core';
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
 import localeDeExtra from '@angular/common/locales/extra/de';
+import { MatPaginatorIntl } from '@angular/material/paginator';
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
+
+class MyMatPaginatorIntl extends MatPaginatorIntl {
+	override itemsPerPageLabel = 'Einträge pro Seite';
+	override nextPageLabel = 'Nächste Seite';
+	override previousPageLabel = 'Vorherige Seite';
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	override getRangeLabel = (page: any, pageSize: any, length: any) => {
+		if (length === 0 || pageSize === 0) {
+			return '0 von ' + length;
+		}
+		length = Math.max(length, 0);
+		const startIndex = page * pageSize;
+		const endIndex = startIndex < length ? Math.min(startIndex + pageSize, length) : startIndex + pageSize;
+		return startIndex + 1 + ' - ' + endIndex + ' von  ' + length;
+	};
+}
 
 @NgModule({
 	declarations: [
@@ -61,6 +79,7 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 				touchendHideDelay: 0,
 			},
 		},
+		{ provide: MatPaginatorIntl, useClass: MyMatPaginatorIntl },
 	],
 	bootstrap: [AppComponent],
 })

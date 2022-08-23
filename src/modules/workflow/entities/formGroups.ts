@@ -70,8 +70,8 @@ export class KubernetesWorkflowDefinitionFormGroup
 		};
 	}
 
-	pushCommand() {
-		(this.controls['command'] as FormArray).push(new FormControl('', Validators.required));
+	pushCommand(v = '') {
+		(this.controls['command'] as FormArray).push(new FormControl(v, Validators.required));
 	}
 }
 export class WebWorkerWorkflowDefinitionFormGroup

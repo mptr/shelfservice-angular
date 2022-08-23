@@ -74,6 +74,8 @@ export abstract class RequirableParameter extends Parameter {
 	required = false;
 	@Accept()
 	hint = '';
+	@Accept()
+	hide = false;
 	override validators(): ValidatorFn[] {
 		return super.validators().concat(this.required ? Validators.required : []);
 	}
@@ -82,6 +84,7 @@ export abstract class RequirableParameter extends Parameter {
 			...super.formGroup().controls,
 			required: new FormControl(this.required),
 			hint: new FormControl(this.hint),
+			hide: new FormControl(this.hide),
 		});
 	}
 }
@@ -97,6 +100,8 @@ export class StringParameter extends RequirableParameter {
 	pattern?: string;
 	@Accept()
 	multiline = false;
+	@Accept()
+	password = false;
 	override validators(): ValidatorFn[] {
 		return super.validators().concat(this.pattern ? Validators.pattern(this.pattern) : []);
 	}
@@ -107,6 +112,7 @@ export class StringParameter extends RequirableParameter {
 				exampleValue: new FormControl(this.exampleValue),
 				pattern: new FormControl(this.pattern),
 				multiline: new FormControl(this.multiline),
+				password: new FormControl(this.password),
 			},
 			this,
 		);

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
-import { RestService } from 'src/services/rest/rest.service';
 import { User } from './user.entity';
 
 @Injectable({
@@ -9,11 +8,7 @@ import { User } from './user.entity';
 })
 export class AuthService {
 	private userCache?: User;
-	constructor(
-		private readonly keycloak: KeycloakService,
-		private readonly router: Router,
-		private readonly rest: RestService,
-	) {}
+	constructor(private readonly keycloak: KeycloakService, private readonly router: Router) {}
 
 	get isLoggedIn(): Promise<boolean> {
 		return this.keycloak.isLoggedIn();
@@ -41,11 +36,6 @@ export class AuthService {
 	 */
 	get profile() {
 		return this.authToken.then(tok => this.parseToken(tok));
-	}
-
-	async currentUser(): Promise<User> {
-		if (!this.userCache) this.userCache = await this.rest.new.navigate('users', User).getOne('self');
-		return this.userCache;
 	}
 
 	/**

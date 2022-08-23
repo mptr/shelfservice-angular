@@ -44,10 +44,21 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 				.navigate('workflows', WorkflowDefinition)
 				.getOne(this.editId)
 				.then(fetched => {
-					this.wf = new WorkflowDefinitionFormGroup(fetched);
-					this.kindControl.setValue(fetched.kind);
+					this.loadWorkflow(fetched, fetched.kind);
 				});
 		}
+	}
+
+	loadWorkflow(data: any, kind: WorkflowType) {
+		this.kindControl.setValue(kind);
+		this.wf = new WorkflowDefinitionFormGroup().convert(kind);
+		this.wf.patchValue(data);
+		data.parameterFields.forEach((p: any) => {
+			this.wf.ctls.parameterFields.push(Parameter.factory(p).formGroup());
+		});
+		data.command.forEach((c: any) => {
+			if (this.isKubernetesFg(this.wf)) this.wf.pushCommand(c);
+		});
 	}
 
 	private switchWfType(kind?: WorkflowType | null) {
@@ -79,19 +90,26 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 			});
 	}
 
-	loadImage($event: { target: (EventTarget & { files?: Blob[] }) | null }) {
+	async loadImage($event: Event) {
 		const fctl = this.wf.get('icon');
 		if (!fctl) throw new Error('Icon Form Control not found');
-		const fs = $event.target?.files;
-		if (!fs) {
-			fctl?.setValue('');
-			return;
-		}
-		const reader = new FileReader();
-		reader.onload = e => {
-			fctl.setValue(e.target?.result?.toString() || '');
-		};
-		reader.readAsDataURL(fs[0]);
+		fctl.setValue(await this.loadFile($event, 'dataUrl'));
+	}
+
+	private async loadFile($event: { target: (EventTarget & { files?: Blob[] }) | null }, type: 'dataUrl' | 'content') {
+		return new Promise<string>((resolve, reject) => {
+			const fs = $event.target?.files;
+			if (!fs) return reject('no file provided');
+			const reader = new FileReader();
+			reader.onload = e => {
+				console.log(e);
+				if (!e.target?.result) return reject('No load result provided');
+				resolve(e.target.result.toString());
+			};
+			reader.onerror = reject;
+			if (type === 'dataUrl') reader.readAsDataURL(fs[0]);
+			else reader.readAsText(fs[0]);
+		});
 	}
 
 	previewControls: SetParameterFormControl[] = [];
@@ -106,5 +124,21 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 				if (!kind) return;
 				this.wf.ctls.parameterFields.push(Parameter.factory({ kind }).formGroup());
 			});
+	}
+
+	async importJsonFileChange($event: Event) {
+		const config = await this.loadFile($event, 'content');
+		const obj = JSON.parse(config);
+		this.loadWorkflow(obj, obj.kind);
+	}
+
+	exportJson() {
+		const str = JSON.stringify({ ...this.wf.value, kind: this.kindControl.value });
+		const blob = new Blob([str], { type: 'application/json' });
+		const link = document.createElement('a');
+		link.href = window.URL.createObjectURL(blob);
+		link.download = (this.wf.value.name || 'workflow').replace(/[^A-z0-9-]/, '-') + '.json';
+		link.click();
+		link.remove();
 	}
 }

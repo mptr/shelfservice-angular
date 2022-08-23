@@ -30,7 +30,19 @@
 		<mat-hint>wird unter dem Textfeld angezeigt</mat-hint>
 	</mat-form-field>
 	<mat-checkbox *ngIf="isRequirableParameterFg(ctl)" formControlName="required">Erforderlich</mat-checkbox>
+	<mat-checkbox
+		*ngIf="isRequirableParameterFg(ctl)"
+		formControlName="hide"
+		matTooltip="Die Nutzereingabe ist in den Workflow-Logs nicht zu sehen. (herausgefiltert)"
+		>Geheim</mat-checkbox
+	>
 	<!-- StringParameter -->
+	<mat-checkbox
+		*ngIf="isStringParameterFg(ctl)"
+		formControlName="password"
+		matTooltip="Die Eingabe wird als *** angezeigt"
+		>Passwort</mat-checkbox
+	>
 	<mat-checkbox *ngIf="isStringParameterFg(ctl)" formControlName="multiline">Mehrzeilig</mat-checkbox>
 	<mat-form-field *ngIf="isStringParameterFg(ctl)" appearance="fill">
 		<mat-label>Beispielwert</mat-label>

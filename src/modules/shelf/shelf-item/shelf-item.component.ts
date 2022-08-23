@@ -32,34 +32,16 @@ export class ShelfItemComponent {
 	}
 
 	details() {
+		if (!this.workflow.id) throw new Error('cannot render dialog for unknown workflow id');
 		this.dialog
 			.open(ShelfItemDetailsDialogComponent, {
 				autoFocus: false,
 				data: this.workflow,
 			})
 			.afterClosed()
-			.subscribe(({ action }) => {
-				switch (action) {
-					case 'remove':
-						if (!this.workflow.id) return; // TODO: ERROR
-						this.rest.new
-							.navigate('workflows')
-							.delete(this.workflow.id)
-							.then(() => this.remove.emit());
-						break;
-					case 'start':
-						this.router.navigate(['/shelf', this.workflow.id, 'runs', 'new']);
-						break;
-					case 'logs':
-						this.router.navigate(['/shelf', this.workflow.id, 'runs']);
-						break;
-					case 'edit':
-						this.router.navigate(['/shelf', this.workflow.id]);
-						break;
-					default:
-						return; // TODO: ERROR
-				}
-			});
+			.subscribe(
+				ShelfItemDetailsDialogComponent.defaultSubscriber(this.workflow.id, this.router, this.rest, this.remove),
+			);
 	}
 
 	bookmark() {

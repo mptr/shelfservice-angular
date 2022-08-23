@@ -1,4 +1,5 @@
 import { Accept } from 'src/util/Accept.decorator';
+import { User } from '../auth/user.entity';
 import { SetParameter } from '../parameter/entities/setParameter.entity';
 import { WorkflowDefinition, KubernetesWorkflowDefinition, WebWorkerWorkflowDefinition } from '../workflow/entities';
 
@@ -11,6 +12,12 @@ export class WorkflowRun {
 
 	@Accept()
 	startedAt?: Date;
+
+	@Accept()
+	finishedAt?: Date;
+
+	@Accept(() => User)
+	ranBy?: User;
 
 	@Accept()
 	status?: 'prepared' | 'success' | 'failure' | 'running';

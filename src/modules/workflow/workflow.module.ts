@@ -15,6 +15,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { WorkflowDetailsComponent } from './workflow-details/workflow-details.component';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
 	declarations: [WorkflowEditComponent, WorkflowRunConfigureComponent, WorkflowDetailsComponent],
@@ -32,6 +33,7 @@ import { MatDividerModule } from '@angular/material/divider';
 		MatInputModule,
 		MatButtonModule,
 		MatDividerModule,
+		MatTooltipModule,
 	],
 	providers: [
 		{
