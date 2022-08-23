@@ -1,6 +1,6 @@
+import { User } from 'src/modules/auth/user.entity';
 import { Parameter } from 'src/modules/parameter/entities';
 import { Accept } from 'src/util/Accept.decorator';
-import { User } from 'src/util/User.entity';
 import { KubernetesWorkflowDefinition, WebWorkerWorkflowDefinition, WorkflowDefinitionFormGroup } from '.';
 
 export enum WorkflowType {

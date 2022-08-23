@@ -1,18 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RestService } from 'src/services/rest/rest.service';
 import { enumToString } from 'src/util/enumToString';
 import { Parameter, ParameterType, SetParameterFormControl } from '../../parameter/entities';
-import {
-	KubernetesWorkflowDefinitionFormGroup,
-	WorkflowDefinition,
-	WorkflowDefinitionFormGroup,
-	WorkflowType,
-} from '../entities';
+import { WorkflowDefinition, WorkflowDefinitionFormGroup, WorkflowType } from '../entities';
 import { AddParameterDialogComponent } from '../../parameter/add-parameter/add-parameter.dialog';
 import { WorkflowDefinitionHelpers } from '../workflow-definition.helpers';
+import { MessageService } from 'src/services/message/message.service';
+import { Message } from 'src/services/message/Message';
 
 @Component({
 	selector: 'app-workflow-edit',
@@ -24,12 +21,14 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 
 	kindControl = new FormControl<WorkflowType | undefined>(undefined, Validators.required);
 
-	wf: WorkflowDefinitionFormGroup = new KubernetesWorkflowDefinitionFormGroup();
+	wf: WorkflowDefinitionFormGroup = new WorkflowDefinitionFormGroup(new WorkflowDefinition());
 
 	constructor(
 		private readonly dialog: MatDialog,
 		private readonly activatedRoute: ActivatedRoute,
 		private readonly rest: RestService,
+		private readonly messageService: MessageService,
+		private readonly router: Router,
 	) {
 		super();
 	}
@@ -72,8 +71,12 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 		rest
 			.navigate(this.kindControl.value, WorkflowDefinition)
 			.post(v)
-			.then(r => console.log('ok', r)) // TODO: msg service
-			.catch(e => console.error('err', e));
+			.then(r => {
+				this.messageService.push(
+					new Message('Gespeichert', `Workflow "${r.name}" wurde erfolgreich gespeichert.`, 'success'),
+				);
+				this.router.navigate(['/']);
+			});
 	}
 
 	loadImage($event: { target: (EventTarget & { files?: Blob[] }) | null }) {

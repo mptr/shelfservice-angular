@@ -3,8 +3,25 @@
 	<mat-drawer #drawer mode="side">
 		<app-sidebar></app-sidebar>
 	</mat-drawer>
-	<div class="content">
+	<div class="content" *ngIf="isLoggedIn">
 		<router-outlet></router-outlet>
+	</div>
+	<div class="center" *ngIf="!isLoggedIn">
+		<mat-card>
+			<mat-card-header>
+				<mat-card-title>
+					<h1>
+						<span>Welcome to Shelfservice</span>
+					</h1>
+				</mat-card-title>
+			</mat-card-header>
+			<mat-card-content>
+				<p>This is a simple application to manage your tasks. You can create, edit and delete tasks.</p>
+			</mat-card-content>
+			<mat-card-actions align="end">
+				<button mat-flat-button color="primary" (click)="auth.login()">Login</button>
+			</mat-card-actions>
+		</mat-card>
 	</div>
 </mat-drawer-container>
 <app-messages></app-messages>

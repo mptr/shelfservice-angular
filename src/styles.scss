@@ -28,9 +28,9 @@ $blueprint-angular-theme: mat.define-light-theme(
 		),
 	)
 );
-
+$primaryColor: mat.get-color-from-palette($blueprint-angular-primary, 500);
 * {
-	--primary-color: #{mat.get-color-from-palette($blueprint-angular-primary, 500)};
+	--primary-color: #{$primaryColor};
 }
 
 // Include theme styles for core and each component used in your app.
@@ -87,15 +87,86 @@ mat-card-actions[align='end'] button {
 .mat-tooltip {
 	line-height: 1.4em !important;
 }
-.mat-icon {
+*:not(.mat-step-icon-content) > .mat-icon {
 	transform: translateY(-1.5px);
 }
 
 // mat-expansion fix for https://github.com/angular/components/issues/20002
+mat-panel-description {
+	justify-content: space-between;
+}
 .mat-content:only-child {
 	margin-right: 8px;
 }
 .mat-expansion-panel-header-title,
 .mat-expansion-panel-header-description {
 	flex-basis: 0;
+}
+// Loading
+body {
+	@keyframes fadeOut {
+		0% {
+			opacity: 1;
+		}
+		99% {
+			display: none;
+		}
+		100% {
+			opacity: 0;
+		}
+	} /* .loading screen is visible when app is not bootstrapped yet, app-root is empty */
+	app-root:not(:empty) + .loading {
+		animation: fadeOut 0.7s ease forwards;
+	}
+	.loading {
+		pointer-events: none;
+		z-index: 100;
+		position: fixed;
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+		background: darken($primaryColor, 20);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 2em;
+		.spinner {
+			animation: rotate 2s linear infinite;
+			z-index: 2;
+			top: 50%;
+			left: 50%;
+			width: 5em;
+			height: 5em;
+
+			& .path {
+				stroke: #fff9;
+				stroke-linecap: round;
+				animation: dash 1.5s ease-in-out infinite;
+			}
+		}
+		h1 {
+			color: #fff9;
+		}
+		@keyframes rotate {
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+		@keyframes dash {
+			0% {
+				stroke-dasharray: 1, 150;
+				stroke-dashoffset: 0;
+			}
+			50% {
+				stroke-dasharray: 90, 150;
+				stroke-dashoffset: -35;
+			}
+			100% {
+				stroke-dasharray: 90, 150;
+				stroke-dashoffset: -124;
+			}
+		}
+	}
 }

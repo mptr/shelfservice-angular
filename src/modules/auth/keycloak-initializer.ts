@@ -10,5 +10,5 @@ export function initalizer(keycloak: KeycloakService): () => Promise<boolean> {
 			pkceMethod: 'S256',
 		},
 	};
-	return () => keycloak.init(options);
+	return () => new Promise(r => setTimeout(r, 400)).then(() => keycloak.init(options));
 }

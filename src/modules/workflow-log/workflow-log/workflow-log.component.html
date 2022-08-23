@@ -2,6 +2,7 @@
 	Workflow-Protokoll: {{ wf?.name }}
 	<button mat-icon-button (click)="openWfDetails()"><mat-icon class="material-icons-outlined">info</mat-icon></button>
 </h2>
+<p class="hint" *ngIf="runs.length === 0">bisher keine Ausführungen</p>
 <mat-accordion class="example-headers-align" multi>
 	<mat-expansion-panel *ngFor="let r of runs">
 		<mat-expansion-panel-header>

@@ -15,7 +15,7 @@ export class NavComponent implements OnInit {
 		this.loginStatus = await this.authService.isLoggedIn;
 		if (this.loginStatus) {
 			const p = await this.authService.profile;
-			this.usernameDisplay = `${p.firstName} ${p.lastName} (${p.username})`;
+			this.usernameDisplay = `${p.name} (${p.preferred_username})`;
 		}
 	}
 

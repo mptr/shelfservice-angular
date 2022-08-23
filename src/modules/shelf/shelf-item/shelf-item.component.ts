@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { User } from 'src/modules/auth/user.entity';
 import { RestService } from 'src/services/rest/rest.service';
 import { WorkflowDefinitionList } from '../../workflow/entities';
 import { ShelfItemDetailsDialogComponent } from '../shelf-item-details/shelf-item-details.dialog';
@@ -14,6 +15,9 @@ export class ShelfItemComponent {
 	@Input()
 	workflow!: WorkflowDefinitionList;
 
+	@Input()
+	currentUser!: User;
+
 	@Output()
 	remove = new EventEmitter();
 
@@ -24,7 +28,7 @@ export class ShelfItemComponent {
 	) {}
 
 	get ownerNames() {
-		return this.workflow.owners?.map(o => o.given_name?.substring(0, 1) + ' ' + o.family_name).join(', ');
+		return this.workflow.owners?.map(o => o.name).join(', ');
 	}
 
 	details() {

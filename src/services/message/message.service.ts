@@ -13,6 +13,7 @@ export class MessageService {
 
 	push(message: Message): Message {
 		this._messages.push(message);
+		if (['info', 'success'].includes(message.kind)) setTimeout(() => this.dismiss(message), 5000);
 		return message;
 	}
 

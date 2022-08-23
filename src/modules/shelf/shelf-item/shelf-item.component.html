@@ -11,7 +11,7 @@
 		<button mat-icon-button (click)="bookmark()" matTooltip="Lesezeichen hinzufügen">
 			<mat-icon>bookmark_outline</mat-icon>
 		</button>
-		<button mat-button (click)="details()" matTooltip="Informationen zum Workflow">
+		<button mat-button *ngIf="currentUser.owns(workflow)" (click)="details()" matTooltip="Informationen zum Workflow">
 			<mat-icon class="material-icons-outlined">info</mat-icon> &nbsp;Details
 		</button>
 		<button

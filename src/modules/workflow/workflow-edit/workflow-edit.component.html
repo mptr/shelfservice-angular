@@ -1,7 +1,7 @@
 <h2>Workflow bearbeiten</h2>
 <mat-card>
-	<mat-stepper orientation="vertical" #stepper>
-		<mat-step label="Workflow-Typ" state="kind">
+	<mat-stepper orientation="vertical" #stepper linear>
+		<mat-step [stepControl]="kindControl" label="Workflow-Typ" state="kind">
 			<div class="formStep">
 				<div class="kindSelect">
 					<button
@@ -20,22 +20,27 @@
 				</button>
 			</div>
 		</mat-step>
-		<ng-container *ngIf="wf" [formGroup]="wf">
+		<ng-container [formGroup]="wf">
 			<mat-step label="Metadaten" state="metadata">
 				<div class="formStep twoCol">
 					<mat-form-field appearance="fill">
 						<mat-label>Name</mat-label>
 						<input matInput formControlName="name" required />
+						<mat-hint>Überschrift des Workflows</mat-hint>
+						<mat-error *ngIf="wf.ctls.name.hasError('required')">Name ist erforderlich</mat-error>
 					</mat-form-field>
 					<div>
 						<button mat-raised-button color="primary" class="center" (click)="uploadFile.click()">
 							Icon auswählen
 						</button>
+						<mat-error *ngIf="wf.ctls.icon.errors">Bitte icon im PNG-Format bereitstellen</mat-error>
 						<input #uploadFile type="file" (change)="loadImage($event)" accept="image/*" style="display: none" />
 					</div>
 					<mat-form-field appearance="fill">
 						<mat-label>Beschreibung</mat-label>
 						<textarea matInput placeholder="Dieser Workflow kann..." formControlName="description" required></textarea>
+						<mat-hint>Was macht dieser Workflow?</mat-hint>
+						<mat-error *ngIf="wf.ctls.description.hasError('required')">Beschreibung ist erforderlich</mat-error>
 					</mat-form-field>
 					<div class="icoPreview" [ngStyle]="{ backgroundImage: wf.iconStyle }"></div>
 				</div>
@@ -52,10 +57,13 @@
 						<mat-label>Image</mat-label>
 						<input matInput placeholder="docker-release..." formControlName="image" />
 						<mat-hint>Docker-Tag</mat-hint>
+						<mat-error *ngIf="wf.ctls.image.hasError('required')">
+							Für einen Kubernetes-Workflow ist ein Image erforderlich.
+						</mat-error>
 					</mat-form-field>
 					<br />
 					<div>
-						<p *ngIf="wf.ctls.command.controls.length === 0">Startbefehl: Standard des angegebenen Images</p>
+						<p *ngIf="wf.ctls.command.controls.length === 0">Startbefehl:<br />Standard des angegebenen Images</p>
 						<mat-form-field
 							appearance="fill"
 							class="compound short"
@@ -66,6 +74,9 @@
 								<mat-icon>close</mat-icon>
 							</button>
 							<mat-hint *ngIf="i === 0">Startbefehl</mat-hint>
+							<mat-error *ngIf="wf.ctls.command.at(i).hasError('required')">
+								Bitte ungenutzte Befehlsteile löschen
+							</mat-error>
 						</mat-form-field>
 					</div>
 					<button class="center" mat-stroked-button (click)="wf.pushCommand()">
@@ -74,19 +85,21 @@
 					</button>
 				</div>
 				<div class="actions">
-					<button mat-button matStepperNext [disabled]="!wf.ctls.command.valid || !wf.ctls.image.valid">
-						<mat-icon>keyboard_arrow_down</mat-icon> weiter
-					</button>
+					<button mat-button matStepperNext><mat-icon>keyboard_arrow_down</mat-icon> weiter</button>
 					<button mat-button matStepperPrevious><mat-icon>keyboard_arrow_up</mat-icon></button>
 				</div>
 			</mat-step>
-			<mat-step label="Parameterisierung" state="parameterization">
+			<mat-step label="Parameterisierung" [stepControl]="wf.ctls.parameterFields" state="parameterization">
 				<div class="formStep">
 					<mat-accordion>
 						<mat-expansion-panel *ngFor="let ctl of wf.ctls.parameterFields.controls; let i = index" [formGroup]="ctl">
 							<mat-expansion-panel-header>
 								<mat-panel-title *ngIf="ctl.value.displayName">{{ ctl.value.displayName }}</mat-panel-title>
 								<mat-panel-title *ngIf="!ctl.value.displayName"><i>unbenannter Parameter</i></mat-panel-title>
+								<mat-panel-description>
+									<span class="code">{{ ctl.value.name }}</span>
+									<mat-icon *ngIf="ctl.parameter">{{ getParameterIcon(ctl.parameter.kind) }}</mat-icon>
+								</mat-panel-description>
 							</mat-expansion-panel-header>
 							<div class="grid">
 								<app-param-edit [ctl]="ctl"></app-param-edit>

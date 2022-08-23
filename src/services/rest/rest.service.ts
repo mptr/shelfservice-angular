@@ -64,6 +64,10 @@ class RestClient<T> {
 		return this.intercept(() => this.http.patch<T>(this.url + '/' + data.id, data));
 	}
 
+	put(data: Partial<T>): Promise<T> {
+		return this.intercept(() => this.http.put<T>(this.url, data));
+	}
+
 	delete(id: id): Promise<T>;
 	delete(object: { id: id }): Promise<T>;
 	delete(id: id | { id: id }): Promise<T> {

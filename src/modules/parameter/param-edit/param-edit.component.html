@@ -4,11 +4,19 @@
 		<mat-label>Variablenname</mat-label>
 		<input matInput class="code" formControlName="name" />
 		<mat-hint>Variablenname des Parameters</mat-hint>
+		<mat-error *ngIf="ctl.controls.name.hasError('required')">Variablenname ist erforderlich</mat-error>
+		<mat-error *ngIf="ctl.controls.name.hasError('pattern')"
+			>Muss dem Muster <span class="code">^[A-z][A-z0-9]*$</span> entsprechen</mat-error
+		>
+		<mat-error *ngIf="ctl.controls.name.errors && ctl.controls.name.errors['maxlength'] as e"
+			>Variablenname ist {{ e['actualLength'] - e['requiredLength'] }} Zeichen zu lang</mat-error
+		>
 	</mat-form-field>
 	<mat-form-field appearance="fill">
 		<mat-label>Anzeigename</mat-label>
 		<input matInput formControlName="displayName" />
 		<mat-hint>Name für das Textfeld</mat-hint>
+		<mat-error *ngIf="ctl.controls.name.hasError('required')">Anzeigename ist erforderlich</mat-error>
 	</mat-form-field>
 	<mat-form-field appearance="fill">
 		<mat-label>Beschreibung</mat-label>

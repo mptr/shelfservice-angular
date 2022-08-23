@@ -176,7 +176,10 @@ export class SelectParameter extends RequirableParameter {
 		return new FormGroupedSelectParameter(
 			{
 				...super.formGroup().controls,
-				options: new FormArray(this.options?.map(o => new FormControl(o)) ?? []),
+				options: new FormArray(
+					this.options.map(o => new FormControl(o)),
+					Validators.required,
+				),
 			},
 			this,
 		);

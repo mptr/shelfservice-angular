@@ -1,3 +1,4 @@
+import { Parameter, ParameterType } from '../parameter/entities';
 import { KubernetesWorkflowDefinition, KubernetesWorkflowDefinitionFormGroup } from './entities';
 import {
 	WorkflowDefinition,
@@ -10,6 +11,10 @@ import {
 export abstract class WorkflowDefinitionHelpers {
 	getReadableType(type: WorkflowType) {
 		return WorkflowDefinition.ctor(type).readableType;
+	}
+
+	getParameterIcon(type: ParameterType) {
+		return Parameter.ctor(type).iconName;
 	}
 
 	workflowTypes = Object.values(WorkflowType) as WorkflowType[];
