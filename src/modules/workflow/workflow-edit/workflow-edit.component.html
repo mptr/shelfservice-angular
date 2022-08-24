@@ -80,7 +80,8 @@
 						<p *ngIf="wf.ctls.command.controls.length === 0">Startbefehl:<br />Standard des angegebenen Images</p>
 						<mat-form-field
 							appearance="fill"
-							class="compound short"
+							class="compound"
+							appAutosize
 							*ngFor="let c of wf.ctls.command.controls; let i = index"
 						>
 							<input matInput [formControl]="c" [placeholder]="['/bin/sh', '-c', '...'][i]" />

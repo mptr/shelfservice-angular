@@ -16,9 +16,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { WorkflowDetailsComponent } from './workflow-details/workflow-details.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AutosizeDirective } from './workflow-edit/autosize.directive';
 
 @NgModule({
-	declarations: [WorkflowEditComponent, WorkflowRunConfigureComponent, WorkflowDetailsComponent],
+	declarations: [WorkflowEditComponent, WorkflowRunConfigureComponent, WorkflowDetailsComponent, AutosizeDirective],
 	imports: [
 		CommonModule,
 		FormsModule,
