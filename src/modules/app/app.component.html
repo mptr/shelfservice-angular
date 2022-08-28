@@ -9,14 +9,14 @@
 	<div class="center" *ngIf="!isLoggedIn">
 		<mat-card>
 			<mat-card-header>
-				<mat-card-title>
-					<h1>
-						<span>Welcome to Shelfservice</span>
-					</h1>
-				</mat-card-title>
+				<mat-card-title>ShelfService</mat-card-title>
 			</mat-card-header>
 			<mat-card-content>
-				<p>This is a simple application to manage your tasks. You can create, edit and delete tasks.</p>
+				<p>
+					ShelfService ist ein Workflow-Manager, mit dem Arbeitsabläufe verwaltet<br />
+					und über Kubernetes Jobs ausgeführt werden können.
+				</p>
+				<p>Bitte melde dich an um ShelfService zu benutzen.</p>
 			</mat-card-content>
 			<mat-card-actions align="end">
 				<button mat-flat-button color="primary" (click)="auth.login()">Login</button>

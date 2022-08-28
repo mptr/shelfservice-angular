@@ -1,0 +1,15 @@
+<mat-form-field class="left" appearance="fill">
+	<mat-label>Suche</mat-label>
+	<input
+		matInput
+		type="text"
+		[(ngModel)]="value"
+		placeholder="VM bestellen..."
+		(keyup.enter)="search()"
+		(keyup)="realTime ? search() : null"
+	/>
+	<button class="fadeIn" [class.visible]="!!value" matSuffix mat-icon-button (click)="value = ''; search()">
+		<mat-icon>close</mat-icon>
+	</button>
+</mat-form-field>
+<button class="right" mat-flat-button color="primary" (click)="search()"><mat-icon>search</mat-icon> Suchen</button>

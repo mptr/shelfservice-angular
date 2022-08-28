@@ -13,9 +13,13 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { WorkflowModule } from '../workflow/workflow.module';
+import { ShelfSearchComponent } from './shelf-search/shelf-search.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
-	declarations: [ShelfListComponent, ShelfItemComponent, ShelfItemDetailsDialogComponent],
+	declarations: [ShelfListComponent, ShelfItemComponent, ShelfItemDetailsDialogComponent, ShelfSearchComponent],
 	imports: [
 		CommonModule,
 		HttpClientModule,
@@ -28,6 +32,9 @@ import { WorkflowModule } from '../workflow/workflow.module';
 		MatTooltipModule,
 		MatMenuModule,
 		WorkflowModule,
+		MatFormFieldModule,
+		MatInputModule,
+		FormsModule,
 	],
 })
 export class ShelfModule {}

@@ -12,9 +12,11 @@ import { WorkflowDefinitionList } from '../../workflow/entities';
 export class ShelfListComponent implements OnInit {
 	constructor(readonly router: Router, private readonly rest: RestService) {}
 
+	private workflowRest = this.rest.new.navigate('workflows', WorkflowDefinitionList);
+
 	async ngOnInit() {
-		this.workflows = await this.rest.new.navigate('workflows', WorkflowDefinitionList).getAll();
 		this.currentUser = await this.rest.new.navigate('users', User).getOne('self');
+		this.updateSearch('');
 	}
 
 	workflows: WorkflowDefinitionList[] = [];
@@ -23,5 +25,9 @@ export class ShelfListComponent implements OnInit {
 
 	createNewWorkflow() {
 		this.router.navigate(['shelf', 'new']);
+	}
+
+	async updateSearch(str: string) {
+		this.workflows = await this.workflowRest.getAll({ search: str });
 	}
 }

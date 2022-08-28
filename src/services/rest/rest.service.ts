@@ -56,8 +56,8 @@ class RestClient<T> {
 		return this.intercept(() => this.http.post<T>(this.url, data));
 	}
 
-	getAll(): Promise<T[]> {
-		return this.intercept(() => this.http.get<T[]>(this.url, { headers: this.headers }));
+	getAll(params: Record<string, string | number> = {}): Promise<T[]> {
+		return this.intercept(() => this.http.get<T[]>(this.url, { headers: this.headers, params }));
 	}
 
 	getOne(id: id): Promise<T>;

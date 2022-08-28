@@ -1,5 +1,5 @@
 <h2>
-	<div class="topbar">
+	<div class="bar">
 		Workflow bearbeiten
 		<button mat-stroked-button (click)="importJsonFile.click()">
 			<mat-icon class="material-icons-outlined">sim_card_download</mat-icon> Importieren
@@ -65,8 +65,8 @@
 					<button mat-button matStepperPrevious><mat-icon>keyboard_arrow_up</mat-icon></button>
 				</div>
 			</mat-step>
-			<mat-step label="Konfiguration" *ngIf="isKubernetesFg(wf)" state="config">
-				<div class="formStep">
+			<mat-step label="Konfiguration" state="config">
+				<div class="formStep" *ngIf="isKubernetesFg(wf)">
 					<mat-form-field appearance="fill">
 						<mat-label>Image</mat-label>
 						<input matInput placeholder="docker-release..." formControlName="image" />
@@ -98,6 +98,16 @@
 						<mat-icon>add</mat-icon>
 						{{ wf.ctls.command.controls.length === 0 ? 'Startbefehl anpassen' : 'Befehlsteil hinzufügen' }}
 					</button>
+				</div>
+				<div class="formStep" *ngIf="isWebWorkerFg(wf)">
+					<mat-form-field appearance="fill">
+						<mat-label>Skript Artefakt-URL</mat-label>
+						<input matInput placeholder="https://raw.githubusercontent.com/..." formControlName="artifactUrl" />
+						<mat-hint>JavaScript Datei-URL</mat-hint>
+						<mat-error *ngIf="wf.ctls.artifactUrl.hasError('required')">
+							Für einen WebWorker-Workflow ist eine JavaScript Datei-URL erforderlich.
+						</mat-error>
+					</mat-form-field>
 				</div>
 				<div class="actions">
 					<button mat-button matStepperNext><mat-icon>keyboard_arrow_down</mat-icon> weiter</button>
@@ -171,6 +181,12 @@
 							</td>
 							<td *ngIf="wf.ctls.command.value.length === 0"><i>standard</i></td>
 						</tr>
+						<tr *ngIf="isWebWorkerFg(wf)">
+							<th>Artefakt-URL</th>
+							<td *ngIf="wf.ctls.artifactUrl" class="code">
+								{{ wf.ctls.artifactUrl.value }}
+							</td>
+						</tr>
 						<tr>
 							<th>Parameter</th>
 							<td *ngIf="wf.ctls.parameterFields">
@@ -212,7 +228,7 @@
 </mat-card>
 <br />
 <h2>
-	<div class="topbar">
+	<div class="bar">
 		<span></span>
 		<button mat-stroked-button (click)="exportJson()"><mat-icon>file_download</mat-icon> Exportieren</button>
 	</div>

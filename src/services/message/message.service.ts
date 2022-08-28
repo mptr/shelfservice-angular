@@ -11,7 +11,8 @@ export class MessageService {
 		return this._messages;
 	}
 
-	push(message: Message): Message {
+	push(message: Message): Message | null {
+		if (this._messages.findIndex(m => m.equals(message)) >= 0) return null;
 		this._messages.push(message);
 		if (['info', 'success'].includes(message.kind)) setTimeout(() => this.dismiss(message), 5000);
 		return message;
