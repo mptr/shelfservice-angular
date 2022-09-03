@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SetParameters, SetParameterFormControl } from 'src/modules/parameter/entities';
 import { WorkflowRun } from 'src/modules/workflow-log/workflow-run';
 import { RestService } from 'src/services/rest/rest.service';
+import { WorkflowWorkerService } from 'src/services/workflow-worker/workflow-worker.service';
 import { WorkflowDefinition } from '../entities';
 
 @Component({
@@ -17,6 +18,7 @@ export class WorkflowRunConfigureComponent implements OnInit {
 		private readonly router: Router,
 		private readonly rest: RestService,
 		private readonly location: Location,
+		private readonly webworkerService: WorkflowWorkerService,
 	) {}
 
 	wfId?: string | null;
@@ -43,10 +45,20 @@ export class WorkflowRunConfigureComponent implements OnInit {
 			.navigate(this.wfId)
 			.navigate('runs', WorkflowRun)
 			.post(this.paramForm.configObject)
-			.then(r => this.router.navigate(['shelf', this.wfId, 'runs', r.id]));
+			.then(async r => {
+				if (r.workflowDefinition?.kind === 'webworker') {
+					// if this is a webworker workflow, we need to start the webworker
+					await this.webworkerService.start(r);
+				}
+				this.router.navigate(['shelf', this.wfId, 'runs', r.id]);
+			});
 	}
 
 	cancel() {
 		this.location.back();
+	}
+
+	get isWebWorkerSupported(): boolean {
+		return typeof Worker !== 'undefined';
 	}
 }

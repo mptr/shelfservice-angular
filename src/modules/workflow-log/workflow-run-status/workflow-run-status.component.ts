@@ -5,6 +5,7 @@ import { KubernetesWorkflowDefinition, WebWorkerWorkflowDefinition } from 'src/m
 import { Message } from 'src/services/message/Message';
 import { MessageService } from 'src/services/message/message.service';
 import { RestService } from 'src/services/rest/rest.service';
+import { WorkflowWorkerService } from 'src/services/workflow-worker/workflow-worker.service';
 import { WorkflowRun } from '../workflow-run';
 
 @Component({
@@ -22,6 +23,7 @@ export class WorkflowRunStatusComponent implements OnInit, AfterViewInit, OnDest
 		private readonly rest: RestService,
 		private readonly changeDetector: ChangeDetectorRef,
 		private readonly messageService: MessageService,
+		private readonly webworkerService: WorkflowWorkerService,
 	) {}
 
 	ngAfterViewInit(): void {
@@ -42,7 +44,9 @@ export class WorkflowRunStatusComponent implements OnInit, AfterViewInit, OnDest
 	ngOnInit() {
 		this.wfId = this.route.snapshot.paramMap.get('id');
 		this.runId = this.route.snapshot.paramMap.get('runId');
-		this.updateWfData().then(() => this.initiateLogStream());
+		this.updateWfData().then(() => {
+			this.initiateLogStream();
+		});
 	}
 
 	ngOnDestroy(): void {
@@ -82,17 +86,7 @@ export class WorkflowRunStatusComponent implements OnInit, AfterViewInit, OnDest
 	}
 
 	async initiateLogStream() {
-		if (!this.runId || !this.wfId) {
-			this.messageService.push(new Message('Fehler', 'Keine Run-ID für den geöffneten Workflow gefunden', 'error'));
-			return;
-		}
-		const logSource = await this.rest.new
-			.navigate('workflows')
-			.navigate(this.wfId)
-			.navigate('runs', WorkflowRun)
-			.navigate(this.runId)
-			.navigate('log')
-			.sse();
+		const logSource = await this.getLogSource();
 		this.logSubscription = logSource.subscribe({
 			next: msg => {
 				this.logs.push(msg);
@@ -112,5 +106,25 @@ export class WorkflowRunStatusComponent implements OnInit, AfterViewInit, OnDest
 				this.updateWfData();
 			},
 		});
+	}
+
+	async getLogSource() {
+		// check if ids are present
+		if (!this.runId || !this.wfId || !this.run) {
+			this.messageService.push(new Message('Fehler', 'Keine Run-ID für den geöffneten Workflow gefunden', 'error'));
+			throw new Error("Can't get log source. ID missing");
+		}
+		// start the workflow here if the workflow should be started client side
+		if (this.run.workflowDefinition instanceof WebWorkerWorkflowDefinition && !this.run.finishedAt)
+			return this.webworkerService.logs(this.run);
+		// otherwise return a stream from the server
+		else
+			return this.rest.new
+				.navigate('workflows')
+				.navigate(this.wfId)
+				.navigate('runs', WorkflowRun)
+				.navigate(this.runId)
+				.navigate('log')
+				.sse();
 	}
 }

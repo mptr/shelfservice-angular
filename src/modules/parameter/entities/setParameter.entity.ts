@@ -18,6 +18,8 @@ export class SetParameter {
 	@Accept()
 	displayName = '';
 	@Accept()
+	name = '';
+	@Accept()
 	value = '';
 	@Accept()
 	hide = false;

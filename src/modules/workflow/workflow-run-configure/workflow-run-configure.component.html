@@ -1,25 +1,47 @@
-<h2>{{ wf?.name || '' }} - konfigurieren</h2>
-<mat-card *ngIf="!wf || !paramForm">
-	<h3>Lädt...</h3>
-	<p>Bitte warten</p>
-</mat-card>
-<mat-card *ngIf="paramForm">
-	<div class="paramGrid">
-		<ng-container *ngFor="let c of paramForm.controls">
-			<div class="desc">
-				<p>
-					<b>{{ c.parameter.displayName }}</b>
-					<br />
-					{{ c.parameter.description }}
-				</p>
-			</div>
-			<app-param-input [ctl]="c"></app-param-input>
-		</ng-container>
-	</div>
+<!-- WebWorker warning -->
+<mat-card *ngIf="!isWebWorkerSupported && wf?.kind === 'webworker'" class="min">
+	<mat-card-title> WebWorker nicht unterstützt </mat-card-title>
+	<mat-card-subtitle>{{ wf?.name }} kann nicht ausgeführt werden</mat-card-subtitle>
+	<mat-card-content>
+		<p>
+			Der Workflow "{{ wf?.name }}" wird Clientseitig ausgeführt und benötigt daher einen WebWorker.<br />
+			Die WebWorker-Funktionalität wird von Ihrem Browser jedoch nicht unterstützt.<br />
+			Bitte verwenden Sie einen anderen Browser.
+		</p>
+	</mat-card-content>
 	<mat-card-actions align="end">
-		<button mat-stroked-button (click)="cancel()"><mat-icon>navigate_before</mat-icon> Abbuch</button>
-		<button mat-raised-button color="primary" [disabled]="!paramForm.valid" (click)="start()">
-			<mat-icon>play_arrow</mat-icon> Starten
-		</button>
+		<button mat-stroked-button color="primary" (click)="cancel()">Schließen</button>
 	</mat-card-actions>
 </mat-card>
+
+<!-- Configure form -->
+<ng-container *ngIf="isWebWorkerSupported || wf?.kind !== 'webworker'">
+	<h2>{{ wf?.name || '' }} - konfigurieren</h2>
+	<br />
+	<mat-card *ngIf="!wf || !paramForm">
+		<h3>Lädt...</h3>
+		<p>Bitte warten</p>
+	</mat-card>
+	<ng-container *ngIf="paramForm">
+		<mat-card>
+			<mat-card-content class="paramGrid">
+				<ng-container *ngFor="let c of paramForm.controls">
+					<div class="desc">
+						<p>
+							<b>{{ c.parameter.displayName }}</b>
+							<br />
+							{{ c.parameter.description }}
+						</p>
+					</div>
+					<app-param-input [ctl]="c"></app-param-input>
+				</ng-container>
+			</mat-card-content>
+			<mat-card-actions align="end">
+				<button mat-stroked-button (click)="cancel()"><mat-icon>navigate_before</mat-icon> Abbuch</button>
+				<button mat-raised-button color="primary" [disabled]="!paramForm.valid" (click)="start()">
+					<mat-icon>play_arrow</mat-icon> Starten
+				</button>
+			</mat-card-actions>
+		</mat-card>
+	</ng-container>
+</ng-container>

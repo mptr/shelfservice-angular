@@ -102,6 +102,10 @@ class RestClient<T> {
 		});
 	}
 
+	blob() {
+		return lastValueFrom(this.http.get(this.url, { responseType: 'blob' }));
+	}
+
 	private static instanciateOptions: ClassTransformOptions = { excludeExtraneousValues: true };
 
 	private intercept(handler: () => Observable<T[]>): Promise<T[]>;
@@ -112,11 +116,11 @@ class RestClient<T> {
 			map(x => {
 				if (this.ctor) {
 					const i = plainToInstance(this.ctor, x, RestClient.instanciateOptions);
-					console.log('Returning:', i, x);
+					// console.log('Returning:', i, x);
 					return i;
 				}
-				console.warn('No ctor given for', this.url);
-				console.log('Returning:', x);
+				// console.warn('No ctor given for', this.url);
+				// console.log('Returning:', x);
 				return x;
 			}),
 		);

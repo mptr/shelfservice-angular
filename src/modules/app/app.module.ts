@@ -1,4 +1,4 @@
-import { LOCALE_ID, NgModule } from '@angular/core';
+import { Injectable, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -27,6 +27,7 @@ import localeDeExtra from '@angular/common/locales/extra/de';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
+@Injectable()
 class MyMatPaginatorIntl extends MatPaginatorIntl {
 	override itemsPerPageLabel = 'Einträge pro Seite';
 	override nextPageLabel = 'Nächste Seite';
