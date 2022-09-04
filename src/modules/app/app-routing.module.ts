@@ -5,6 +5,7 @@ import { WorkflowEditComponent } from '../workflow/workflow-edit/workflow-edit.c
 import { WorkflowRunConfigureComponent } from '../workflow/workflow-run-configure/workflow-run-configure.component';
 import { WorkflowRunStatusComponent } from '../workflow-log/workflow-run-status/workflow-run-status.component';
 import { WorkflowLogComponent } from '../workflow-log/workflow-log/workflow-log.component';
+import { HowToComponent } from '../how-to/how-to/how-to.component';
 
 const routes: Routes = [
 	{
@@ -28,6 +29,7 @@ const routes: Routes = [
 			},
 		],
 	},
+	{ path: 'howto', component: HowToComponent },
 	{ path: '**', redirectTo: 'shelf' },
 ];
 @NgModule({

@@ -5,6 +5,8 @@
 	</button>
 	<span class="title" [routerLink]="['/']">ShelfService</span>
 	<span class="spacer"></span>
+	<button mat-flat-button [routerLink]="['/howto']">HowTo &nbsp;<b style="font-size: 1.3em">?</b></button>
+	&nbsp;&nbsp;
 	<button mat-flat-button *ngIf="!loginStatus" (click)="authService.login()">
 		Login
 		<mat-icon>login</mat-icon>

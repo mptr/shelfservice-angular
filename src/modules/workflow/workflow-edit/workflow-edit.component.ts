@@ -10,6 +10,7 @@ import { AddParameterDialogComponent } from '../../parameter/add-parameter/add-p
 import { WorkflowDefinitionHelpers } from '../workflow-definition.helpers';
 import { MessageService } from 'src/services/message/message.service';
 import { Message } from 'src/services/message/Message';
+import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'app-workflow-edit',
@@ -23,6 +24,8 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 
 	wf: WorkflowDefinitionFormGroup = new WorkflowDefinitionFormGroup(new WorkflowDefinition());
 
+	private initialState?: Record<string, unknown> & Record<'kind', WorkflowType>;
+
 	constructor(
 		private readonly dialog: MatDialog,
 		private readonly activatedRoute: ActivatedRoute,
@@ -31,6 +34,7 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 		private readonly router: Router,
 	) {
 		super();
+		this.initialState = this.router.getCurrentNavigation()?.extras?.state?.['workflow'];
 	}
 
 	types = enumToString(ParameterType);
@@ -44,29 +48,42 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 				.navigate('workflows', WorkflowDefinition)
 				.getOne(this.editId)
 				.then(fetched => {
-					this.loadWorkflow(fetched, fetched.kind);
+					this.loadWorkflow(fetched as unknown as Record<string, unknown>, fetched.kind);
 				});
 		}
+		if (this.initialState?.kind) this.loadWorkflow(this.initialState, this.initialState.kind);
 	}
 
-	loadWorkflow(data: any, kind: WorkflowType) {
+	loadWorkflow(data: Record<string, unknown>, kind: WorkflowType) {
 		this.kindControl.setValue(kind);
 		this.wf = new WorkflowDefinitionFormGroup().convert(kind);
 		this.wf.patchValue(data);
-		data.parameterFields.forEach((p: any) => {
-			this.wf.ctls.parameterFields.push(Parameter.factory(p).formGroup());
-		});
-		data.command.forEach((c: any) => {
-			if (this.isKubernetesFg(this.wf)) this.wf.pushCommand(c);
-		});
+		if (data['parameterFields'] !== undefined) {
+			if (!Array.isArray(data['parameterFields']))
+				console.error('could not load parameterFields data', data['parameterFields']);
+			else
+				data['parameterFields'].forEach((p: any) => {
+					this.wf.ctls.parameterFields.push(Parameter.factory(p).formGroup());
+				});
+		}
+		if (data['command'] !== undefined) {
+			if (!Array.isArray(data['command'])) console.error('could not load command data', data['command']);
+			else
+				data['command'].forEach((c: string) => {
+					if (this.isKubernetesFg(this.wf)) this.wf.pushCommand(c);
+				});
+		}
+		this.setupCachePreviewControls();
 	}
 
 	private switchWfType(kind?: WorkflowType | null) {
 		if (kind) this.wf = this.wf.convert(kind);
 		this.setupCachePreviewControls();
 	}
+	private paramChangeSub?: Subscription;
 	private setupCachePreviewControls() {
-		this.wf.ctls.parameterFields.valueChanges.subscribe(() => {
+		this.paramChangeSub?.unsubscribe();
+		this.paramChangeSub = this.wf.ctls.parameterFields.valueChanges.subscribe(() => {
 			this.previewControls =
 				this.wf.ctls.parameterFields.controls.map(pf => {
 					return new SetParameterFormControl(pf.toParameter());

@@ -145,14 +145,17 @@ class RestClient<T> {
 				),
 			);
 		else if (error.status == 403) this.msgService.push(new Message(`Fehler`, `Keine Berechtigung`, 'warning'));
-		else
+		else {
+			const msgParts: string[] = Array.isArray(error.error.message) ? error.error.message : [error.error.message];
+			const headline = error.status === 400 ? 'Ungültige Eingabedaten' : 'Unbekannter Fehler';
 			this.msgService.push(
 				new Message(
-					`Unbekannter Fehler`,
-					error.error.statusCode + '<br>' + error.error.message.replace('<', '&lt;').replace('>', '&gt;'),
+					headline,
+					error.error.statusCode + '<br>' + msgParts.map(p => p.replace('<', '&lt;').replace('>', '&gt;')).join('<br>'),
 					'warning',
 				),
 			);
+		}
 		return of();
 	}
 }

@@ -1,0 +1,35 @@
+:host {
+	display: grid;
+	max-width: 900px;
+}
+mat-card {
+	font-size: 1.3em;
+	margin-bottom: 2em;
+}
+table {
+	border-spacing: 0;
+	border-collapse: collapse;
+	width: 100%;
+	margin-bottom: 12px;
+	th,
+	td {
+		padding: 0.3em 1em 0.3em 0;
+		border-bottom: #eee 1px solid;
+		text-align: left;
+	}
+	button {
+		padding: 0.05em 0.8em 0;
+		line-height: 1.8em;
+	}
+}
+::ng-deep {
+	mat-tab-body {
+		padding: 1.5em 2.2em;
+	}
+}
+pre {
+	width: fit-content;
+	border: 1px #dedede solid;
+	padding: 0.5em 1em;
+	border-radius: 4px;
+}

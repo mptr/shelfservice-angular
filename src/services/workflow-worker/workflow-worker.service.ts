@@ -36,10 +36,11 @@ export class WorkflowWorkerService {
 		const subject = new ReplaySubject<string>();
 
 		worker.onmessage = msg => {
-			if (msg.data === 'complete') {
+			if (msg.data === '__complete') {
 				subject.complete();
 				worker.terminate();
-			} else subject.next(msg.data + '\n');
+				// TODO: hand in the logs
+			} else subject.next(msg.data.replace(/(^"|"$)/gm, '') + '\n');
 		};
 		worker.onmessageerror = data => {
 			subject.error(data);
@@ -55,8 +56,6 @@ export class WorkflowWorkerService {
 	}
 
 	logs(run: WorkflowRun) {
-		console.log(this.logStore);
-		console.log(run);
 		const o = this.logStore[(run.workflowDefinition?.id || '') + (run.id || '')];
 		if (!o)
 			return new Observable<string>(s => {
