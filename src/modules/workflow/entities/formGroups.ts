@@ -77,11 +77,11 @@ export class KubernetesWorkflowDefinitionFormGroup
 export class WebWorkerWorkflowDefinitionFormGroup
 	extends WorkflowDefinitionFormGroup
 	implements
-		FormGrouped<Pick<WebWorkerWorkflowDefinition, 'name' | 'description' | 'icon' | 'parameterFields' | 'artifactUrl'>>
+		FormGrouped<Pick<WebWorkerWorkflowDefinition, 'name' | 'description' | 'icon' | 'parameterFields' | 'script'>>
 {
 	constructor(p?: Partial<WebWorkerWorkflowDefinition>) {
 		super(p);
-		this.addControl('artifactUrl', new FormControl(p?.artifactUrl, Validators.required));
+		this.addControl('script', new FormControl(p?.script, Validators.required));
 	}
 
 	override get ctls() {
@@ -90,7 +90,8 @@ export class WebWorkerWorkflowDefinitionFormGroup
 			description: FormControl;
 			icon: FormControl;
 			parameterFields: FormArray<FormGroupedParameter>;
-			artifactUrl: FormControl;
+			// artifactUrl: FormControl;
+			script: FormControl;
 		};
 	}
 }

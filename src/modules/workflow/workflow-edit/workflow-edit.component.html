@@ -101,11 +101,14 @@
 				</div>
 				<div class="formStep" *ngIf="isWebWorkerFg(wf)">
 					<mat-form-field appearance="fill">
-						<mat-label>Skript Artefakt-URL</mat-label>
-						<input matInput placeholder="https://raw.githubusercontent.com/..." formControlName="artifactUrl" />
-						<mat-hint>JavaScript Datei-URL</mat-hint>
-						<mat-error *ngIf="wf.ctls.artifactUrl.hasError('required')">
-							Für einen WebWorker-Workflow ist eine JavaScript Datei-URL erforderlich.
+						<mat-label>Skript</mat-label>
+						<textarea matInput placeholder="const foo = () => ..." formControlName="script"> </textarea>
+						<button matSuffix mat-icon-button (click)="wf.ctls.script.setValue('')">
+							<mat-icon>upload</mat-icon>
+						</button>
+						<mat-hint>JavaScript</mat-hint>
+						<mat-error *ngIf="wf.ctls.script.hasError('required')">
+							Für einen WebWorker-Workflow eine JavaScript-Implementierung erforderlich.
 						</mat-error>
 					</mat-form-field>
 				</div>
@@ -182,10 +185,8 @@
 							<td *ngIf="wf.ctls.command.value.length === 0"><i>standard</i></td>
 						</tr>
 						<tr *ngIf="isWebWorkerFg(wf)">
-							<th>Artefakt-URL</th>
-							<td *ngIf="wf.ctls.artifactUrl" class="code">
-								{{ wf.ctls.artifactUrl.value }}
-							</td>
+							<th>Skript-Upload</th>
+							<td *ngIf="wf.ctls.script">{{ wf.ctls.script.value.length }} Zeichen</td>
 						</tr>
 						<tr>
 							<th>Parameter</th>

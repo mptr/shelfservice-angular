@@ -6,8 +6,11 @@ export class WebWorkerWorkflowDefinition extends WorkflowDefinition {
 
 	@Accept()
 	override kind = WorkflowType.WEBWORKER;
+	// @Accept()
+	// artifactUrl?: string;
+
 	@Accept()
-	artifactUrl?: string;
+	script?: string;
 
 	override formGroup() {
 		return super.formGroup();
