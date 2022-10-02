@@ -201,16 +201,17 @@ cnt <span style="color: #333333">=</span> <span style="color: #007020">int</span
 					style="line-height: 125%"
 				><span style="color: #008800; font-weight: bold">const</span> sleep <span style="color: #333333">=</span> (seconds) <span style="color: #333333">=&gt;</span> <span style="color: #008800; font-weight: bold">new</span> Promise(r <span style="color: #333333">=&gt;</span> setTimeout(r, seconds <span style="color: #333333">*</span> <span style="color: #0000DD; font-weight: bold">1000</span>))
 
-<span style="color: #006600">// self.onvariables wird beim Workflow-Start aufgerufen. Eingabedaten sind Parameter des Hooks</span>
-self.onvariables <span style="color: #333333">=</span> async ({{ '{' }} COUNT, USERNAME {{ '}' }}) <span style="color: #333333">=&gt;</span> {{ '{' }}
-    console.log(<span style="background-color: #fff0f0">&quot;Hallo &quot;</span> <span style="color: #333333">+</span> USERNAME);
-    <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #008800; font-weight: bold">let</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> <span style="color: #007020">Number</span>(COUNT); i<span style="color: #333333">++</span>) {{ '{' }}
-        console.log(<span style="color: #008800; font-weight: bold">new</span> <span style="color: #007020">Date</span>());
-        await sleep(<span style="color: #0000DD; font-weight: bold">1</span>);
-    {{ '}' }}
-    self.done()); <span style="color: #006600">// markiert den Workflow als beendet</span>
-{{ '}' }};
+<span style="color: #008800; font-weight: bold">const</span> main <span style="color: #333333">=</span> async ({{ '{' }} USERNAME, COUNT {{ '}' }}) <span style="color: #333333">=&gt;</span> {{ '{' }}
+	console.log(<span style="background-color: #fff0f0">&quot;Hallo &quot;</span> <span style="color: #333333">+</span> USERNAME);
+	<span style="color: #008800; font-weight: bold">for</span> (<span style="color: #008800; font-weight: bold">let</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> <span style="color: #007020">Number</span>(COUNT); i<span style="color: #333333">++</span>) {{ '{' }}
+		console.log(<span style="color: #008800; font-weight: bold">new</span> <span style="color: #007020">Date</span>());
+		await sleep(<span style="color: #0000DD; font-weight: bold">1</span>);
+	{{ '}' }}
+{{ '}' }}
+
+await main(self.variables);
 </pre>
+				<p>Wie dieses Script in einer Workflow-Definition verwendet wirst kannst du hier sehen:</p>
 				<button mat-flat-button color="primary" (click)="goto('datelogger-webworker')">Definition ansehen</button>
 			</mat-tab>
 		</mat-tab-group>

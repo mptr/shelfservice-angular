@@ -82,8 +82,18 @@ export class HowToComponent {
 					kind: 'number',
 				},
 			],
-			artifactUrl:
-				'https://gist.githubusercontent.com/mptr/c6a2a187034dd2c735555160d9eb01a7/raw/d956f610f92df6eecfa59af753b5efa17b39068f/dateloger.js',
+			script: `const sleep = (seconds) => new Promise(r => setTimeout(r, seconds * 1000))
+
+const main = async ({ USERNAME, COUNT }) => {
+	console.log("Hallo " + USERNAME);
+	for (let i = 0; i < Number(COUNT); i++) {
+		console.log(new Date());
+		await sleep(1);
+	}
+}
+
+await main(self.variables);
+`,
 			kind: 'webworker',
 		},
 	};

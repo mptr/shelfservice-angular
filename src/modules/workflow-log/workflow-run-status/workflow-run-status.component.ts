@@ -114,7 +114,7 @@ export class WorkflowRunStatusComponent implements OnInit, AfterViewInit, OnDest
 			this.messageService.push(new Message('Fehler', 'Keine Run-ID für den geöffneten Workflow gefunden', 'error'));
 			throw new Error("Can't get log source. ID missing");
 		}
-		// start the workflow here if the workflow should be started client side
+		// if workflow runs in this browser, use the service
 		if (this.run.workflowDefinition instanceof WebWorkerWorkflowDefinition && !this.run.finishedAt)
 			return this.webworkerService.logs(this.run);
 		// otherwise return a stream from the server

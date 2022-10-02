@@ -31,8 +31,8 @@
 			<ng-container *ngSwitchCase="'running'"
 				>Läuft (seit {{ run?.startedAt | dateRelative: 'no-prefix' }})</ng-container
 			>
-			<ng-container *ngSwitchCase="'success'">Beendet (am {{ run?.finishedAt | date }})</ng-container>
-			<ng-container *ngSwitchCase="'failure'">Fehlgeschlagen (am {{ run?.finishedAt | date }})</ng-container>
+			<ng-container *ngSwitchCase="'success'">Beendet ({{ run?.finishedAt | dateRelative }})</ng-container>
+			<ng-container *ngSwitchCase="'failure'">Fehlgeschlagen ({{ run?.finishedAt | dateRelative }})</ng-container>
 			<ng-container *ngSwitchCase="'prepared'">Startet</ng-container>
 			<ng-container *ngSwitchDefault><i>unbekannt</i></ng-container>
 		</mat-card-subtitle>

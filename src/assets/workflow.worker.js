@@ -1,6 +1,4 @@
 // Setup global variable store
-// eslint-disable-next-line no-var, @typescript-eslint/no-unused-vars
-declare var variables: Record<string, unknown>;
 self.variables = {};
 
 // copy global functions in this scope
@@ -8,8 +6,8 @@ const cnsl = console.log;
 const pm = self.postMessage;
 
 // stringify helper for self-ref objects
-const jsonStringify = (obj: unknown) => {
-	const cache: unknown[] = [];
+const jsonStringify = obj => {
+	const cache = [];
 	return JSON.stringify(
 		obj,
 		(key, value) => {
@@ -27,10 +25,12 @@ const jsonStringify = (obj: unknown) => {
 
 // redirect console.log to postMessage
 console.log = (...args) => {
-	args.forEach(arg => {
-		const data = ['object', 'function'].includes(typeof arg) ? jsonStringify(arg) : arg;
-		pm({ type: 'log', data });
-	});
+	args
+		.filter(arg => typeof arg !== 'function')
+		.forEach(arg => {
+			const data = typeof arg === 'object' ? jsonStringify(arg) : arg;
+			// pm({ type: 'log', data });
+		});
 };
 
 // make postMessage use the same interface as console.log

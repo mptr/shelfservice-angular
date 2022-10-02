@@ -100,9 +100,9 @@
 					</button>
 				</div>
 				<div class="formStep" *ngIf="isWebWorkerFg(wf)">
-					<mat-form-field appearance="fill">
+					<mat-form-field appearance="fill" class="code" appAutosize>
 						<mat-label>Skript</mat-label>
-						<textarea matInput placeholder="const foo = () => ..." formControlName="script"> </textarea>
+						<textarea matInput placeholder="const foo = () => ..." formControlName="script"></textarea>
 						<button matSuffix mat-icon-button (click)="wf.ctls.script.setValue('')">
 							<mat-icon>upload</mat-icon>
 						</button>

@@ -62,7 +62,7 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 			if (!Array.isArray(data['parameterFields']))
 				console.error('could not load parameterFields data', data['parameterFields']);
 			else
-				data['parameterFields'].forEach((p: any) => {
+				data['parameterFields'].forEach((p: Partial<Parameter> & Pick<Parameter, 'kind'>) => {
 					this.wf.ctls.parameterFields.push(Parameter.factory(p).formGroup());
 				});
 		}
@@ -82,13 +82,16 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 	}
 	private paramChangeSub?: Subscription;
 	private setupCachePreviewControls() {
-		this.paramChangeSub?.unsubscribe();
-		this.paramChangeSub = this.wf.ctls.parameterFields.valueChanges.subscribe(() => {
+		const remap = () => {
 			this.previewControls =
 				this.wf.ctls.parameterFields.controls.map(pf => {
 					return new SetParameterFormControl(pf.toParameter());
 				}) || [];
-		});
+			console.log('previewControls', this.previewControls);
+		};
+		this.paramChangeSub?.unsubscribe();
+		this.paramChangeSub = this.wf.ctls.parameterFields.valueChanges.subscribe(() => remap());
+		remap();
 	}
 
 	save() {

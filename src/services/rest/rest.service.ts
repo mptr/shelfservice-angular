@@ -86,9 +86,7 @@ class RestClient<T> {
 		const t = await this.auth.authToken;
 		return new Observable(subscriber => {
 			const sse = new EventSourcePolyfill(this.url, {
-				headers: {
-					authorization: 'Bearer ' + t,
-				},
+				headers: { authorization: 'Bearer ' + t },
 			});
 			sse.onmessage = e => {
 				const d = JSON.parse(e.data);

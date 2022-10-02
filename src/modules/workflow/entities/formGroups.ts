@@ -90,7 +90,6 @@ export class WebWorkerWorkflowDefinitionFormGroup
 			description: FormControl;
 			icon: FormControl;
 			parameterFields: FormArray<FormGroupedParameter>;
-			// artifactUrl: FormControl;
 			script: FormControl;
 		};
 	}

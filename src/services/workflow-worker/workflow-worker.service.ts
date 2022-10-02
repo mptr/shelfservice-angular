@@ -30,14 +30,12 @@ export class WorkflowWorkerService {
 				blob =>
 					new Promise(r => {
 						const a = new FileReader();
-						a.onload = function (e) {
-							r(e.target?.result);
-						};
+						a.onload = e => r(e.target?.result);
 						a.readAsDataURL(blob);
 					}),
 			);
 		// create worker instance
-		const worker = new Worker(new URL('./workflow.worker', import.meta.url), { type: 'module' });
+		const worker = new Worker('/assets/workflow.worker.js', { type: 'module' });
 		// map variables from array to object
 		const variables = run.parameters.reduce((acc, { name, value }) => {
 			acc[name] = value;
@@ -63,16 +61,16 @@ export class WorkflowWorkerService {
 			console.error('comms sabotaged', e);
 			quit();
 		};
-		worker.onmessage = msg => {
-			switch (msg.data.type) {
+		worker.onmessage = ({ data: message }) => {
+			switch (message.type) {
 				case 'init':
-					return subject.next('Worker gestartet');
+					return;
 				case 'log':
-					return subject.next(msg.data.message);
+					return subject.next(message.data.replace(/^"/, '').replace(/"$/, '') + '\n');
 				case 'done':
 					return quit();
 				default:
-					subject.error('unknown message type: ' + msg.data.type);
+					subject.error('unknown message type: ' + message.type);
 					return quit();
 			}
 		};
@@ -118,8 +116,7 @@ export class WorkflowWorkerService {
 			.navigate(run.workflowDefinition.id)
 			.navigate('runs')
 			.navigate(run.id)
-			.navigate('logs', WebWorkerResultDto)
-			.post({ result, log: logs.join('\n') })
-			.then(x => console.log('archive success', x));
+			.navigate('log', WebWorkerResultDto)
+			.post({ result, log: logs.join('') });
 	}
 }
