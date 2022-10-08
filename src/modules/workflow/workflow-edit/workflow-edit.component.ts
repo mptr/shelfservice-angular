@@ -45,10 +45,11 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 		if (this.editId !== null) {
 			// there exists an id, so we need to load the workflow
 			this.rest.new
-				.navigate('workflows', WorkflowDefinition)
+				.navigate('workflows')
 				.getOne(this.editId)
 				.then(fetched => {
-					this.loadWorkflow(fetched as unknown as Record<string, unknown>, fetched.kind);
+					console.log('setting ', fetched);
+					this.loadWorkflow(fetched as unknown as Record<string, unknown>, fetched['kind'] || 'kubernetes');
 				});
 		}
 		if (this.initialState?.kind) this.loadWorkflow(this.initialState, this.initialState.kind);
@@ -94,20 +95,20 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 		remap();
 	}
 
+	get formValue() {
+		return { ...this.wf.value, kind: this.kindControl.value };
+	}
+
 	save() {
-		if (!this.kindControl.value) return;
-		const v = this.wf.value;
-		console.log(v);
-		const rest = this.rest.new.navigate('workflows');
-		rest
-			.navigate(this.kindControl.value, WorkflowDefinition)
-			.post(v)
-			.then(r => {
-				this.messageService.push(
-					new Message('Gespeichert', `Workflow "${r.name}" wurde erfolgreich gespeichert.`, 'success'),
-				);
-				this.router.navigate(['/']);
-			});
+		const rest = this.rest.new.navigate('workflows', WorkflowDefinition.ctor(this.formValue.kind));
+		console.log(rest.url);
+		const result = this.editId ? rest.patch({ ...this.formValue, id: this.editId }) : rest.post(this.formValue);
+		result.then(r => {
+			this.messageService.push(
+				new Message('Gespeichert', `Workflow "${r.name}" wurde erfolgreich gespeichert.`, 'success'),
+			);
+			this.router.navigate(['/']);
+		});
 	}
 
 	async loadImage($event: Event) {
@@ -136,9 +137,7 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 
 	addParam() {
 		this.dialog
-			.open(AddParameterDialogComponent, {
-				autoFocus: false,
-			})
+			.open(AddParameterDialogComponent, { autoFocus: false })
 			.afterClosed()
 			.subscribe(kind => {
 				if (!kind) return;
@@ -153,7 +152,7 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 	}
 
 	exportJson() {
-		const str = JSON.stringify({ ...this.wf.value, kind: this.kindControl.value });
+		const str = JSON.stringify(this.formValue);
 		const blob = new Blob([str], { type: 'application/json' });
 		const link = document.createElement('a');
 		link.href = window.URL.createObjectURL(blob);

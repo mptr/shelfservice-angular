@@ -16,9 +16,10 @@
 			matTooltipPosition="above"
 		>
 			<mat-label>{{ p.displayName }}</mat-label>
-			<input matInput [value]="p.hide ? '*****' : p.value" readonly />
+			<input matInput [value]="run.getValueFor(p.name)" readonly />
+			<!-- <input matInput [value]="p.hide ? '*****' : p.value" readonly />
 			<mat-hint *ngIf="!p.hide && !p.value">keine Angabe</mat-hint>
-			<mat-hint *ngIf="p.hide && p.value">versteckt</mat-hint>
+			<mat-hint *ngIf="p.hide && p.value">versteckt</mat-hint> -->
 		</mat-form-field>
 	</mat-card-content>
 </mat-card>

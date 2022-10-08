@@ -29,7 +29,7 @@ console.log = (...args) => {
 		.filter(arg => typeof arg !== 'function')
 		.forEach(arg => {
 			const data = typeof arg === 'object' ? jsonStringify(arg) : arg;
-			// pm({ type: 'log', data });
+			pm({ type: 'log', data });
 		});
 };
 

@@ -27,6 +27,13 @@ export class SetParameter {
 	description = '';
 }
 
+export class SetVariable {
+	@Accept()
+	name = '';
+	@Accept()
+	value = '';
+}
+
 export class SetParameterFormControl extends FormControl {
 	constructor(public parameter: Parameter, value = '') {
 		super(value, parameter.validators());

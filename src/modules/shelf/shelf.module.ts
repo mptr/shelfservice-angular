@@ -36,5 +36,6 @@ import { MatInputModule } from '@angular/material/input';
 		MatInputModule,
 		FormsModule,
 	],
+	exports: [ShelfItemComponent],
 })
 export class ShelfModule {}

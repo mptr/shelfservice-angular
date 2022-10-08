@@ -1,4 +1,21 @@
 :host {
 	display: block;
+	height: calc(100% - 2em);
 	padding: 1em;
+	width: 20em;
+}
+.emptyMsg {
+	display: flex;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	gap: 1em;
+	color: #aaa;
+	mat-icon {
+		font-size: 5em;
+		height: auto;
+		width: auto;
+		opacity: 0.5;
+	}
 }

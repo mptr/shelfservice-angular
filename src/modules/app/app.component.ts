@@ -13,13 +13,13 @@ export class AppComponent implements OnInit {
 
 	isLoggedIn = false;
 
-	ngOnInit(): void {
-		this.auth.isLoggedIn
-			.then(r => (this.isLoggedIn = r))
-			.then(() => this.auth.profile)
-			.then(profile => {
-				if (!profile.preferred_username) throw new Error('No username found in profile');
-				this.rest.new.navigate('users').navigate(profile.preferred_username, User).put(profile);
-			});
+	async ngOnInit() {
+		const l = await this.auth.isLoggedIn;
+		if (!l) return;
+		this.auth.profile.then(profile => {
+			if (!profile.preferred_username) throw new Error('No username found in profile');
+			this.rest.new.navigate('users').navigate(profile.preferred_username, User).put(profile);
+			this.isLoggedIn = true;
+		});
 	}
 }

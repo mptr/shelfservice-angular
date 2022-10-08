@@ -1,3 +1,12 @@
-<p>Auto-resizing sidenav</p>
-<p>Lorem, ipsum dolor sit amet consectetur.</p>
-<button mat-raised-button>Test Button</button>
+<div class="emptyMsg" *ngIf="bookmarks.size === 0">
+	<mat-icon>bookmark_outline</mat-icon>
+	<p>Keine Lesezeichen</p>
+</div>
+<div *ngIf="currentUser">
+	<app-shelf-item
+		*ngFor="let bookmark of bookmarks"
+		[id]="bookmark"
+		[currentUser]="currentUser"
+		[minView]="true"
+	></app-shelf-item>
+</div>

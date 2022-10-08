@@ -37,7 +37,7 @@ export class WorkflowWorkerService {
 		// create worker instance
 		const worker = new Worker('/assets/workflow.worker.js', { type: 'module' });
 		// map variables from array to object
-		const variables = run.parameters.reduce((acc, { name, value }) => {
+		const variables = run.variables.reduce((acc, { name, value }) => {
 			acc[name] = value;
 			return acc;
 		}, {} as Record<string, unknown>);
@@ -61,16 +61,16 @@ export class WorkflowWorkerService {
 			console.error('comms sabotaged', e);
 			quit();
 		};
-		worker.onmessage = ({ data: message }) => {
-			switch (message.type) {
+		worker.onmessage = ({ data }) => {
+			switch (data.type) {
 				case 'init':
 					return;
 				case 'log':
-					return subject.next(message.data.replace(/^"/, '').replace(/"$/, '') + '\n');
+					return subject.next(data.data.replace(/^"/, '').replace(/"$/, '') + '\n');
 				case 'done':
 					return quit();
 				default:
-					subject.error('unknown message type: ' + message.type);
+					subject.error('unknown message type: ' + data.type);
 					return quit();
 			}
 		};

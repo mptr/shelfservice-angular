@@ -26,6 +26,7 @@ import localeDe from '@angular/common/locales/de';
 import localeDeExtra from '@angular/common/locales/extra/de';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { HowToModule } from '../how-to/how-to.module';
+
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
 @Injectable()
