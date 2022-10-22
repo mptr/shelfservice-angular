@@ -112,14 +112,8 @@ class RestClient<T> {
 		const observer = handler().pipe(
 			catchError((error: HttpErrorResponse) => this.handleError(error)),
 			map(x => {
-				if (this.ctor) {
-					const i = plainToInstance(this.ctor, x, RestClient.instanciateOptions);
-					// console.log('Returning:', i, x);
-					return i;
-				}
-				// console.warn('No ctor given for', this.url);
-				// console.log('Returning:', x);
-				return x;
+				if (this.ctor) return plainToInstance(this.ctor, x, RestClient.instanciateOptions);
+				else return x;
 			}),
 		);
 		try {

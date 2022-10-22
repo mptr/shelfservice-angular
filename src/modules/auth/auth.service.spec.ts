@@ -48,11 +48,11 @@ describe('AuthService', () => {
 			.mockResolvedValue(
 				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwiZ2l2ZW5fbmFtZSI6IkpvaG4iLCJmYW1pbHlfbmFtZSI6IkRvZSIsImVtYWlsIjoiam9obi5kb2VAdGVzdC5kZSIsInByZWZlcnJlZF91c2VybmFtZSI6Impkb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.WNdXd0a3qFTrJu3E4bKkTClA54JFmRBAnjToMtt0eso',
 			);
-		expect(await service.profile).toEqual({
-			firstName: 'John',
-			lastName: 'Doe',
+		expect(await service.profile).toMatchObject({
+			given_name: 'John',
+			family_name: 'Doe',
 			email: 'john.doe@test.de',
-			username: 'jdoe',
+			preferred_username: 'jdoe',
 		});
 	});
 

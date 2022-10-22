@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { Message } from 'src/services/message/Message';
+import { MessageService } from 'src/services/message/message.service';
 
 type ExampleKeys = 'new-kubernetes' | 'new-webworker' | 'datelogger-kubernetes' | 'datelogger-webworker';
 
@@ -98,9 +100,17 @@ await main(self.variables);
 		},
 	};
 
-	constructor(private readonly router: Router) {}
+	constructor(private readonly router: Router, private readonly msgService: MessageService) {}
 
 	protected goto(dst: ExampleKeys) {
+		if (this.examples[dst]['name'])
+			this.msgService.push(
+				new Message(
+					'Beispiel geladen',
+					`Der Beispielworkflow ${this.examples[dst]['name']} wurde in den Editor geladen.`,
+					'success',
+				),
+			);
 		this.router.navigate(['/shelf/new'], {
 			state: { workflow: this.examples[dst] },
 		});

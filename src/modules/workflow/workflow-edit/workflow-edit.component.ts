@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,21 +10,25 @@ import { AddParameterDialogComponent } from '../../parameter/add-parameter/add-p
 import { WorkflowDefinitionHelpers } from '../workflow-definition.helpers';
 import { MessageService } from 'src/services/message/message.service';
 import { Message } from 'src/services/message/Message';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { MatStepper } from '@angular/material/stepper';
 
 @Component({
 	selector: 'app-workflow-edit',
 	templateUrl: './workflow-edit.component.html',
 	styleUrls: ['./workflow-edit.component.scss'],
 })
-export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements OnInit {
+export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements OnInit, AfterViewInit {
 	editId: string | null = null;
 
 	kindControl = new FormControl<WorkflowType | undefined>(undefined, Validators.required);
 
 	wf: WorkflowDefinitionFormGroup = new WorkflowDefinitionFormGroup(new WorkflowDefinition());
 
-	private initialState?: Record<string, unknown> & Record<'kind', WorkflowType>;
+	protected initialState?: Record<string, unknown> & Record<'kind', WorkflowType>;
+
+	@ViewChild('stepper', { static: false }) stepper!: MatStepper;
+	private stepperPresent = new Subject<void>();
 
 	constructor(
 		private readonly dialog: MatDialog,
@@ -35,6 +39,7 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 	) {
 		super();
 		this.initialState = this.router.getCurrentNavigation()?.extras?.state?.['workflow'];
+		console.log(this.initialState);
 	}
 
 	types = enumToString(ParameterType);
@@ -52,7 +57,14 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 					this.loadWorkflow(fetched as unknown as Record<string, unknown>, fetched['kind'] || 'kubernetes');
 				});
 		}
-		if (this.initialState?.kind) this.loadWorkflow(this.initialState, this.initialState.kind);
+		if (this.initialState?.kind) {
+			this.loadWorkflow(this.initialState, this.initialState.kind);
+			// advance the stepper as soon as present
+			this.stepperPresent.subscribe(() => setTimeout(() => (this.stepper.selectedIndex = 1), 0));
+		}
+	}
+	async ngAfterViewInit() {
+		this.stepperPresent.next();
 	}
 
 	loadWorkflow(data: Record<string, unknown>, kind: WorkflowType) {
@@ -146,9 +158,17 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 	}
 
 	async importJsonFileChange($event: Event) {
-		const config = await this.loadFile($event, 'content');
+		const e = $event as Event & { target: { value: string } };
+		const config = await this.loadFile(e, 'content');
+		e.target.value = '';
 		const obj = JSON.parse(config);
+		console.log('');
 		this.loadWorkflow(obj, obj.kind);
+		if (JSON.stringify(this.formValue) !== JSON.stringify(obj))
+			this.messageService.push(
+				new Message('Warnung', 'Die importierte Konfiguration enthält nicht unterstützte Felder.', 'warning'),
+			);
+		else this.messageService.push(new Message('Import', 'Import erfolgreich', 'success'));
 	}
 
 	exportJson() {

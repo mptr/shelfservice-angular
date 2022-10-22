@@ -12,9 +12,7 @@ export class BookmarkService {
 	public readonly subject = new ReplaySubject<Set<string>>(1);
 
 	constructor(private messageService: MessageService) {
-		console.log('persist', localStorage.getItem(this.key));
 		this.collection = new Set(JSON.parse(localStorage.getItem(this.key) || '[]'));
-		console.log('c', this.collection);
 		this.subject.next(this.collection);
 	}
 
