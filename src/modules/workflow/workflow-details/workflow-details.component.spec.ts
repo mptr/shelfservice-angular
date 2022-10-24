@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatCardModule } from '@angular/material/card';
 
 import { WorkflowDetailsComponent } from './workflow-details.component';
 
@@ -8,6 +9,7 @@ describe('WorkflowDetailsComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
+			imports: [MatCardModule],
 			declarations: [WorkflowDetailsComponent],
 		}).compileComponents();
 

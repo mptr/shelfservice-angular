@@ -14,6 +14,7 @@ module.exports = {
 	collectCoverage: true,
 	coverageReporters: ['lcov', 'html'],
 	coverageDirectory: 'coverage',
+	collectCoverageFrom: ['src/services/workflow-worker/**/*.{ts,js}'],
 	coveragePathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/', '<rootDir>/src/generated/'],
 	reporters: [
 		'default',

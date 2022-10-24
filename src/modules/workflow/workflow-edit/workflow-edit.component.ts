@@ -39,7 +39,6 @@ export class WorkflowEditComponent extends WorkflowDefinitionHelpers implements 
 	) {
 		super();
 		this.initialState = this.router.getCurrentNavigation()?.extras?.state?.['workflow'];
-		console.log(this.initialState);
 	}
 
 	types = enumToString(ParameterType);
