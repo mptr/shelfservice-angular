@@ -1,0 +1,32 @@
+table {
+	width: 100%;
+	td > mat-icon {
+		margin-top: 6px;
+	}
+}
+
+@keyframes rotate {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(-360deg);
+	}
+}
+.rotateAnimate {
+	animation: rotate 2s linear infinite;
+}
+.green {
+	color: #00b300;
+}
+.red {
+	color: #b40000;
+}
+.blue {
+	color: #004bb3;
+}
+.hint {
+	padding: 2em 0;
+	text-align: center;
+	color: #777;
+}

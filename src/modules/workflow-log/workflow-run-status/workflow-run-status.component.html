@@ -1,0 +1,62 @@
+<app-workflow-details [wf]="run?.workflowDefinition"> </app-workflow-details>
+<br />
+<mat-card>
+	<mat-card-header>
+		<mat-card-title>Parameter</mat-card-title>
+		<mat-card-subtitle
+			>Workflow gestartet durch: {{ run?.ranBy?.name }} ({{ run?.ranBy?.preferred_username }})</mat-card-subtitle
+		>
+	</mat-card-header>
+	<mat-card-content class="grid" *ngIf="run">
+		<p *ngIf="run.parametersSorted.length === 0">Keine Parameter</p>
+		<mat-form-field
+			*ngFor="let p of run.parametersSorted"
+			appearance="fill"
+			[matTooltip]="p.description"
+			matTooltipPosition="above"
+		>
+			<mat-label>{{ p.displayName }}</mat-label>
+			<input matInput [value]="run.getValueFor(p.name)" readonly />
+			<!-- <input matInput [value]="p.hide ? '*****' : p.value" readonly />
+			<mat-hint *ngIf="!p.hide && !p.value">keine Angabe</mat-hint>
+			<mat-hint *ngIf="p.hide && p.value">versteckt</mat-hint> -->
+		</mat-form-field>
+	</mat-card-content>
+</mat-card>
+<br />
+<mat-card>
+	<mat-card-header>
+		<mat-card-title>Log</mat-card-title>
+		<mat-card-subtitle [ngSwitch]="run?.status"
+			>Status:
+			<ng-container *ngSwitchCase="'running'"
+				>Läuft (seit {{ run?.startedAt | dateRelative: 'no-prefix' }})</ng-container
+			>
+			<ng-container *ngSwitchCase="'success'">Beendet ({{ run?.finishedAt | dateRelative }})</ng-container>
+			<ng-container *ngSwitchCase="'failure'">Fehlgeschlagen ({{ run?.finishedAt | dateRelative }})</ng-container>
+			<ng-container *ngSwitchCase="'prepared'">Startet</ng-container>
+			<ng-container *ngSwitchDefault><i>unbekannt</i></ng-container>
+		</mat-card-subtitle>
+	</mat-card-header>
+	<div class="console" mat-card-image #console>
+		<p class="newlined code">
+			<ng-container *ngFor="let l of logs">{{ l }}</ng-container>
+		</p>
+	</div>
+	<mat-card-actions>
+		<button mat-button (click)="scroll('up')" matTooltip="Zum Beginn springen">
+			<mat-icon class="rotate90">first_page</mat-icon>
+		</button>
+		<button mat-button (click)="scroll('down')" matTooltip="Zum Ende springen">
+			<mat-icon class="rotate90">last_page</mat-icon>
+		</button>
+		&nbsp;
+		<mat-checkbox
+			[(ngModel)]="stick"
+			(ngModelChange)="stick ? scroll('down', true) : null"
+			matTooltip="Neueste Zeile am Bildlaufende halten"
+		>
+			Auto-Scroll</mat-checkbox
+		>
+	</mat-card-actions>
+</mat-card>

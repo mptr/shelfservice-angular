@@ -142,6 +142,7 @@
 	"defaultProject": "blueprint-angular",
 	"cli": {
 		"packageManager": "pnpm",
-		"defaultCollection": "@angular-eslint/schematics"
+		"defaultCollection": "@angular-eslint/schematics",
+		"analytics": false
 	}
 }

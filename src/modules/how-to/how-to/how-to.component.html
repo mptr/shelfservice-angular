@@ -1,0 +1,219 @@
+<mat-card>
+	<mat-card-header>
+		<mat-card-title> Was ist ShelfService? </mat-card-title>
+	</mat-card-header>
+	<mat-card-content>
+		<p>
+			Shelfservice ist virtuelles Regal, in dem Workflows (wie z.B. Self-Services) zur verfügung gestellt werden.<br />
+			Nutzer können ihre eigenen Workflows in das virtuelle Regal stellen und so für andere Nutzer verfügbar machen.
+		</p>
+	</mat-card-content>
+</mat-card>
+
+<mat-card>
+	<mat-card-header>
+		<mat-card-title> Wie kann ein Workflow parameterisiert werden? </mat-card-title>
+	</mat-card-header>
+	<mat-card-content>
+		<p>
+			Workflow Parameter können in der Workflow Definition eingestellt werden. Dabei kann aus verschiedenen
+			Parameter-Typen gewählt werden:
+		</p>
+		<table>
+			<tr>
+				<th>Typ</th>
+				<th>Beschreibung</th>
+				<th>Einsatzbeispiel</th>
+			</tr>
+			<tr>
+				<th>String</th>
+				<td>Ein- oder Mehrzeiliger Text, mit regulären Ausdrücken validierbar</td>
+				<td><i>Namens- oder IP-Adresseingabe</i></td>
+			</tr>
+			<tr>
+				<th>Auswahl</th>
+				<td>Einfachauswahl aus vorgegebenen Optionen</td>
+				<td><i>Umgebungsauswahl (Dev/Staging/Prod)</i></td>
+			</tr>
+			<tr>
+				<th>Zahl</th>
+				<td>Zahleingabe, mit Minimal- und Maximalwert sowie Schrittweite validierbar</td>
+				<td><i>Geben Sie die gewünschte RAM-Größe an</i></td>
+			</tr>
+			<tr>
+				<th>Ja/Nein</th>
+				<td>Boolean-Abfrage als Checkbox</td>
+				<td><i>Soll ein Administratorkonto angelegt werden?</i></td>
+			</tr>
+			<tr>
+				<th>Datum</th>
+				<td>Datumsangabe per Kalenderblatt-Menü</td>
+				<td><i>Bis wann benötigen Sie die Bereitstellung?</i></td>
+			</tr>
+		</table>
+		<p>
+			Diese Parameter werden dann vom Workflow-Verwender vor der Ausführung abgefragt.<br />
+			Die eingegebenen Werte werden dann im Workflow als Variablen zur Verfügung gestellt.
+		</p>
+	</mat-card-content>
+</mat-card>
+
+<mat-card>
+	<mat-card-header>
+		<mat-card-title> Wie erstelle ich einen Workflow? </mat-card-title>
+	</mat-card-header>
+	<mat-card-content>
+		<p>
+			Vor der Erstellung eines Workflows musst du dich entscheiden, welchen Workflow-Typ du erstellen möchtest.<br />
+			ShelfService bietet derzeit folgende Workflow-Typen an:
+		</p>
+		<table>
+			<tr>
+				<th></th>
+				<th>Kubernetes</th>
+				<th>WebWorker</th>
+			</tr>
+			<tr>
+				<th>Wo wird der Workflow ausgeführt?</th>
+				<td>Serverseitig</td>
+				<td>Clientseitig</td>
+			</tr>
+			<tr>
+				<th>Wie wird der Workflow programmiert?</th>
+				<td>Docker-Image</td>
+				<td>JavaScript</td>
+			</tr>
+			<tr>
+				<th>Vorteil</th>
+				<td>Verwendung von Secrets</td>
+				<td>Ausführung im Netzwerkkontext des Aufrufers</td>
+			</tr>
+			<tr>
+				<th>Nachteil</th>
+				<td>Viel Overhead für kleine Jobs</td>
+				<td>Ungesicherte Ausführungsumgebung</td>
+			</tr>
+			<tr>
+				<th>Jetzt erstellen</th>
+				<th><button mat-stroked-button (click)="goto('new-kubernetes')">Kubernetes-Workflow</button></th>
+				<th><button mat-stroked-button (click)="goto('new-webworker')">WebWorker-Workflow</button></th>
+			</tr>
+		</table>
+		<p>
+			Ein <b>Kubernetes</b>-Job eignet sich für komplexe Workflows, die Secrets verwenden können und Serverseitig
+			ausgeführt werden sollen.<br />
+			Für einen <b>WebWorker</b> solltest du dich entscheiden, wenn din Workflow keine Secrets benötigt und besonders
+			schnell ablaufen soll.
+		</p>
+	</mat-card-content>
+</mat-card>
+
+<mat-card>
+	<mat-card-header>
+		<mat-card-title> Wie funktioniert ein Kubernetes-Workflow? </mat-card-title>
+	</mat-card-header>
+	<mat-card-content>
+		<p>
+			Ein Kubernetes-Workflow wird mit einem Docker-Image definiert. Dieses Image wird dann von einem Kubernetes-Job
+			ausgeführt.<br />
+			Die Parameter werden dem Job als Umgebungsvariablen übergeben. Die Ausgaben des Jobs (Logs) werden dem Aufrufer
+			angezeigt.
+		</p>
+	</mat-card-content>
+</mat-card>
+
+<mat-card>
+	<mat-card-header>
+		<mat-card-title>Wie funktioniert ein WebWorker-Workflow? </mat-card-title>
+	</mat-card-header>
+	<mat-card-content>
+		<p>
+			Ein WebWorker-Workflow wird mit einem JavaScript-Artefakt definiert. Dieses wird per WebWorker ausgeführt. Demnach
+			stehen im Script-Kontext die Funktionen der
+			<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API">WebWorker-API</a> zur Verfügung.<br />
+			Der WebWorker kann mittels der <code>postMessage()</code>-Funktion Ausgaben zur Protokollierung/Ausgabe senden.
+			Parameter kann der Worker mit dem <code>onmessage</code>-Event empfangen.
+		</p>
+	</mat-card-content>
+</mat-card>
+
+<mat-card>
+	<mat-card-header>
+		<mat-card-title>Beispiel</mat-card-title>
+	</mat-card-header>
+	<mat-card-content>
+		<p>
+			Als Beispiel für einen Workflow soll ein einfacher Date-Logger dienen.<br />
+			Der Nutzer soll seinen Namen, sowie die Anzahl der Log-Intervalle angeben können. Die Parameterisierung des
+			Workflows funktioniert für beide Workflow-Typen gleich. Es werden zwei Parameter benötigt.<br />
+			Zur Abfrage des Namens empfiehlt es sich, ein Textfeld zu verwenden. Über eine Validierung mit einem regulären
+			Ausdruck kann z.B. abgesichert werden, dass keine Zahlen im Namen auftauchen dürfen.
+			<br />
+			Die Anzahl der Log-Intervalle kann über eine Nummerneingabe abgefragt werden. Diese bietet z.B. die Möglichkeit
+			eine Mindest- und Maximalgrenze festzulegen.
+		</p>
+		<p>Wähle einen Workflow-Typ aus um die entsprechende Definition und Implementierung anzusehen.</p>
+		<mat-tab-group mat-align-tabs="center">
+			<mat-tab label="Kubernetes">
+				<p>
+					Um die eingegebenen Parameter zu verarbeiten, wird ein Docker-Image benötigt.<br />Dieses könnte durch
+					folgendes <code>Dockerfile</code> definiert sein:
+				</p>
+				<pre style="line-height: 125%"><span style="color: #BB0066; font-weight: bold">FROM</span> python
+<span style="color: #BB0066; font-weight: bold">RUN</span> echo &quot;<span style="color: #cccccc">\n\</span>
+<span style="color: #008800; font-weight: bold">import</span> <span style="color: #0e84b5; font-weight: bold">os</span> <span style="color: #cccccc">\n\</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">time</span> <span style="color: #008800; font-weight: bold">import</span> sleep <span style="color: #cccccc">\n\</span>
+<span style="color: #008800; font-weight: bold">from</span> <span style="color: #0e84b5; font-weight: bold">datetime</span> <span style="color: #008800; font-weight: bold">import</span> datetime <span style="color: #cccccc">\n\</span>
+<span style="color: #cccccc">\n\</span>
+name <span style="color: #333333">=</span> os<span style="color: #333333">.</span>environ[<span style="background-color: #fff0f0">&#39;USERNAME&#39;</span>] <span style="color: #cccccc">\n\</span>
+cnt <span style="color: #333333">=</span> <span style="color: #007020">int</span>(os<span style="color: #333333">.</span>environ[<span style="background-color: #fff0f0">&#39;COUNT&#39;</span>]) <span style="color: #cccccc">\n\</span>
+<span style="color: #cccccc">\n\</span>
+<span style="color: #007020">print</span>(<span style="background-color: #fff0f0">&#39;Hallo &#39;</span> <span style="color: #333333">+</span> name) <span style="color: #cccccc">\n\</span>
+<span style="color: #008800; font-weight: bold">for</span> i <span style="color: #000000; font-weight: bold">in</span> <span style="color: #007020">range</span>(cnt): <span style="color: #cccccc">\n\</span>
+	<span style="color: #007020">print</span>(datetime<span style="color: #333333">.</span>now()<span style="color: #333333">.</span>strftime(<span style="background-color: #fff0f0">&#39;%d.%m.%Y %H:%M:%S&#39;</span>)) <span style="color: #cccccc">\n\</span>
+	sleep(<span style="color: #0000DD; font-weight: bold">1</span>) <span style="color: #cccccc">\n\</span>
+&quot; &gt; <span style="font-weight:bold;">datelogger.py</span>
+</pre>
+				<p>Der entsprechend einzustellende Startbefehl ist dann <code>[ "python, "./datelogger.py" ]</code>.<br /></p>
+				<p>
+					Alternativ können die Umgebungsvariablen bereits im Startbefehl verwendet werden. <br />
+					In diesem Fall genügt das standard <code>alpine</code>-Image und das folgende einzeilige Bash-Script als
+					Startbefehl<br />
+					<code>[ "/bin/sh", "-c", "echo \"Hallo $USERNAME\"; for i in `seq 1 $COUNT`; do date; sleep 1; done" ]</code>
+				</p>
+				<p>Dieses Image kann dann in einer Workflow-Definition verwendet werden:</p>
+				<button mat-flat-button color="primary" (click)="goto('datelogger-kubernetes')">Definition ansehen</button>
+			</mat-tab>
+			<mat-tab label="WebWorker">
+				<p>
+					Bei Workflows die Clientseitig ausgeführt werden, übernimmt ein WebWorker die Verarbeitung der eingegebenen
+					Parameter.
+				</p>
+				<p>
+					Der WebWorker wird über ein JavaScript-Artefakt implementiert. ShelfService kann dieses Artefakt dann mittels
+					eines URL übergeben werden. So kann beispielsweise direkt auf in GitHib verwaltete Quellcodedateien verwiesen
+					werden. Für kleinere Skripte kann auch GitHub Gist verwendet werden. Beim Kopieren des URL ist darauf zu
+					achten, dass dieser <em>nur</em> auf die Quellcodedatei verweist und nicht auf die gesamte GitHub-Seite.
+					(Rohansicht wählen)
+				</p>
+				<p>Beispielhaft könnte das JavaScript-Artefakt für den Datelogger so aussehen:</p>
+				<pre
+					style="line-height: 125%"
+				><span style="color: #008800; font-weight: bold">const</span> sleep <span style="color: #333333">=</span> (seconds) <span style="color: #333333">=&gt;</span> <span style="color: #008800; font-weight: bold">new</span> Promise(r <span style="color: #333333">=&gt;</span> setTimeout(r, seconds <span style="color: #333333">*</span> <span style="color: #0000DD; font-weight: bold">1000</span>))
+
+<span style="color: #008800; font-weight: bold">const</span> main <span style="color: #333333">=</span> async ({{ '{' }} USERNAME, COUNT {{ '}' }}) <span style="color: #333333">=&gt;</span> {{ '{' }}
+	console.log(<span style="background-color: #fff0f0">&quot;Hallo &quot;</span> <span style="color: #333333">+</span> USERNAME);
+	<span style="color: #008800; font-weight: bold">for</span> (<span style="color: #008800; font-weight: bold">let</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> <span style="color: #007020">Number</span>(COUNT); i<span style="color: #333333">++</span>) {{ '{' }}
+		console.log(<span style="color: #008800; font-weight: bold">new</span> <span style="color: #007020">Date</span>());
+		await sleep(<span style="color: #0000DD; font-weight: bold">1</span>);
+	{{ '}' }}
+{{ '}' }}
+
+await main(self.variables);
+</pre>
+				<p>Wie dieses Script in einer Workflow-Definition verwendet wirst kannst du hier sehen:</p>
+				<button mat-flat-button color="primary" (click)="goto('datelogger-webworker')">Definition ansehen</button>
+			</mat-tab>
+		</mat-tab-group>
+	</mat-card-content>
+</mat-card>

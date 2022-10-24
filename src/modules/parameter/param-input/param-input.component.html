@@ -1,0 +1,66 @@
+<p *ngIf="!ctl">Ladt...</p>
+<ng-container *ngIf="ctl">
+	<mat-checkbox *ngIf="isBooleanParameter(parameter)" [formControl]="ctl">
+		{{ parameter.displayName }}
+	</mat-checkbox>
+	<mat-form-field *ngIf="isStringParameter(parameter)" appearance="fill">
+		<mat-label>{{ parameter.displayName }}</mat-label>
+		<input
+			*ngIf="!parameter.multiline"
+			matInput
+			[formControl]="ctl"
+			[placeholder]="parameter.exampleValue || ''"
+			[ngClass]="{ password: parameter.password }"
+		/>
+		<textarea
+			*ngIf="parameter.multiline"
+			matInput
+			[formControl]="ctl"
+			[placeholder]="parameter.exampleValue || ''"
+			[ngClass]="{ password: parameter.password }"
+		></textarea>
+		<mat-hint>{{ parameter.hint }}</mat-hint>
+		<mat-error *ngIf="ctl.errors && ctl.errors['pattern']">
+			Erforderliches Muster: <code>{{ ctl.errors['pattern'].requiredPattern }}</code>
+		</mat-error>
+		<mat-error *ngIf="ctl.errors && ctl.errors['required']"> Parameter ist erforderlich </mat-error>
+	</mat-form-field>
+	<mat-form-field *ngIf="isDateParameter(parameter)" appearance="fill">
+		<mat-label>{{ parameter.displayName }}</mat-label>
+		<input matInput [formControl]="ctl" />
+		<mat-hint>{{ parameter.hint }}</mat-hint>
+		<mat-error *ngIf="ctl.errors && ctl.errors['pattern']">
+			Erforderliches Muster: <code>{{ ctl.errors['pattern'].requiredPattern }}</code>
+		</mat-error>
+		<mat-error *ngIf="ctl.errors && ctl.errors['required']"> Parameter ist erforderlich </mat-error>
+	</mat-form-field>
+	<mat-form-field *ngIf="isNumberParameter(parameter)" appearance="fill">
+		<mat-label>{{ parameter.displayName }}</mat-label>
+		<input
+			matInput
+			type="number"
+			[formControl]="ctl"
+			[min]="parameter.min ?? null"
+			[max]="parameter.max ?? null"
+			[step]="parameter.step"
+		/>
+		<mat-hint>{{ parameter.hint }}</mat-hint>
+		<mat-error *ngIf="ctl.errors && ctl.errors['required']"> Parameter ist erforderlich </mat-error>
+		<mat-error *ngIf="ctl.errors && ctl.errors['min']"> Wert muss >= {{ parameter.min }} sein </mat-error>
+		<mat-error *ngIf="ctl.errors && ctl.errors['max']"> Wert muss <= {{ parameter.max }} sein </mat-error>
+		<mat-error *ngIf="ctl.errors && ctl.errors['step']">
+			Wert muss ein Vielfaches von {{ parameter.step }} sein
+		</mat-error>
+	</mat-form-field>
+	<mat-form-field *ngIf="isSelectParameter(parameter)" appearance="fill">
+		<mat-label>{{ parameter.displayName }}</mat-label>
+		<mat-select [formControl]="ctl">
+			<mat-option *ngFor="let opt of parameter.options" [value]="opt">
+				{{ opt }}
+			</mat-option>
+		</mat-select>
+		<mat-hint>{{ parameter.hint }}</mat-hint>
+		<mat-error *ngIf="ctl.errors && ctl.errors['required']"> Parameter ist erforderlich </mat-error>
+		<mat-error *ngIf="ctl.errors && ctl.errors['option']"> Bitte eine Auswahl treffen </mat-error>
+	</mat-form-field>
+</ng-container>

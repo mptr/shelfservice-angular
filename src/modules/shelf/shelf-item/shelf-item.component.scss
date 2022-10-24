@@ -1,0 +1,11 @@
+mat-card {
+	height: fit-content;
+	p {
+		height: 3em;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: -webkit-box;
+		-webkit-line-clamp: 2; /* number of lines to show */
+		-webkit-box-orient: vertical;
+	}
+}

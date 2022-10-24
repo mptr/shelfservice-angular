@@ -1,0 +1,34 @@
+<ng-template #dialogActions>
+	<mat-card-actions align="end" #dialogActions>
+		<button mat-icon-button *ngIf="owns" [matMenuTriggerFor]="wfAdminMenu">
+			<mat-icon>more_vert</mat-icon>
+		</button>
+		<mat-menu #wfAdminMenu="matMenu">
+			<button mat-menu-item (click)="action('logs')">
+				<mat-icon>receipt_long</mat-icon>
+				<span>Logs anzeigen</span>
+			</button>
+			<button mat-menu-item (click)="action('edit')">
+				<mat-icon>edit</mat-icon>
+				<span>Workflow anpassen</span>
+			</button>
+			<button mat-menu-item (click)="action('remove')">
+				<mat-icon>delete</mat-icon>
+				<span>Workflow löschen</span>
+			</button>
+		</mat-menu>
+
+		<!-- <button mat-stroked-button matTooltip="Diesen Workflow als Vorlage für einen eigenen Workflow verwenden">
+			<mat-icon>copy_all</mat-icon> Vorlage
+		</button> -->
+		<button *ngIf="wf" mat-flat-button (click)="action('start')" color="primary">
+			<ng-container *ngIf="wf.hasParams"><mat-icon>edit_note</mat-icon> Konfigurieren</ng-container>
+			<ng-container *ngIf="!wf.hasParams"> <mat-icon>play_arrow</mat-icon> Starten</ng-container>
+		</button>
+	</mat-card-actions>
+</ng-template>
+
+<button mat-icon-button class="close-button" [mat-dialog-close]="true">
+	<mat-icon class="close-icon">close</mat-icon>
+</button>
+<app-workflow-details *ngIf="wf" [wf]="wf" [actions]="dialogActions"> </app-workflow-details>

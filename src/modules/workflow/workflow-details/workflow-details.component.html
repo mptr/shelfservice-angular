@@ -1,0 +1,61 @@
+<mat-card>
+	<mat-card-header *ngIf="wf">
+		<div mat-card-avatar *ngIf="wf.iconStyle() !== ''" [attr.style]="wf.iconStyle()"></div>
+		<mat-card-title>{{ wf.name }}</mat-card-title>
+		<mat-card-subtitle>Workflow-Details</mat-card-subtitle>
+	</mat-card-header>
+	<mat-card-content *ngIf="!wf">
+		<p><i>Lädt...</i></p>
+	</mat-card-content>
+	<mat-card-content *ngIf="wf">
+		<p>{{ wf.description }}</p>
+		<mat-divider></mat-divider>
+		<table>
+			<tr>
+				<th>Typ</th>
+				<td>{{ readableType }}</td>
+			</tr>
+			<tr>
+				<th>Parameter</th>
+				<td>{{ wf.parameterFields?.length || 'keine' }}</td>
+			</tr>
+			<tr *ngIf="isKubernetesWfDef(wf)">
+				<th>Image</th>
+				<td class="code">{{ wf.image }}</td>
+			</tr>
+			<tr *ngIf="isKubernetesWfDef(wf)">
+				<th>Startbefehl</th>
+				<td *ngIf="wf.command?.length" class="code">{{ wf.command | json }}</td>
+				<td *ngIf="!wf.command?.length"><i>standard</i></td>
+			</tr>
+			<tr>
+				<th>Erstellt am</th>
+				<td>{{ wf.createdAt | date }}</td>
+			</tr>
+			<tr>
+				<th>Besitzer</th>
+				<ng-container [ngSwitch]="wf.owners?.length">
+					<td *ngSwitchCase="1">
+						<span matTooltipPosition="after" [matTooltip]="wf.owners ? wf.owners[0].preferred_username ?? '' : ''">{{
+							wf.owners ? wf.owners[0].name : ''
+						}}</span>
+					</td>
+					<td *ngSwitchCase="0"><i>keine</i></td>
+					<td *ngSwitchCase="undefined"><i>unbekannt</i></td>
+					<td *ngSwitchDefault>
+						<ul>
+							<li *ngFor="let o of wf.owners">
+								<span matTooltipPosition="after" [matTooltip]="o.preferred_username ?? ''">{{ o.name }}</span>
+							</li>
+						</ul>
+					</td>
+				</ng-container>
+			</tr>
+			<tr>
+				<th>ID</th>
+				<td class="code">{{ wf.id }}</td>
+			</tr>
+		</table>
+	</mat-card-content>
+	<ng-container [ngTemplateOutlet]="actions"></ng-container>
+</mat-card>

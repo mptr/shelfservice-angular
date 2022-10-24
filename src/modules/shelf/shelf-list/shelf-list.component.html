@@ -1,0 +1,14 @@
+<app-shelf-search (valueChange)="updateSearch($event)" [realTime]="true"></app-shelf-search>
+<br />
+<div class="grid" *ngIf="currentUser">
+	<app-shelf-item
+		*ngFor="let wf of workflows; let i = index"
+		[workflow]="wf"
+		[currentUser]="currentUser"
+		(remove)="workflows.splice(i, 1)"
+	>
+	</app-shelf-item>
+	<button mat-raised-button class="createButton" color="primary" (click)="createNewWorkflow()" #searchBtn>
+		<mat-icon>add</mat-icon>
+	</button>
+</div>

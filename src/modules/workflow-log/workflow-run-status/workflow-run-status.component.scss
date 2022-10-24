@@ -1,0 +1,30 @@
+$consoleBackground: #181a1a;
+.grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-gap: 1em 2em;
+	margin-top: 1em;
+}
+.console {
+	max-height: 500px;
+	overflow: auto;
+	background-color: $consoleBackground;
+	color: #fff;
+	margin-bottom: 0;
+	p {
+		margin: 1.5em;
+	}
+	&::-webkit-scrollbar {
+		width: 12px;
+	}
+	&::-webkit-scrollbar-thumb {
+		background: #666;
+		border: 3px solid $consoleBackground;
+		&:hover {
+			background: #999;
+		}
+	}
+}
+.rotate90 {
+	transform: rotate(90deg);
+}

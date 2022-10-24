@@ -1,0 +1,24 @@
+:host {
+	max-width: 85%;
+}
+
+app-shelf-search {
+	max-width: 700px;
+	margin: 0 auto;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, 24em);
+	justify-content: center;
+	align-items: end;
+	// grid-auto-rows: 200px;
+	gap: 2em;
+	.createButton {
+		min-height: 10em;
+		height: -webkit-fill-available;
+		mat-icon {
+			transform: scale(2.2);
+		}
+	}
+}

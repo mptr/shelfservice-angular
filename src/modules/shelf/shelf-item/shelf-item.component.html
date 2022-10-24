@@ -1,0 +1,38 @@
+<mat-card *ngIf="workflow">
+	<mat-card-header>
+		<div *ngIf="workflow.icon" mat-card-avatar [attr.style]="workflow.iconStyle()"></div>
+		<mat-card-title>{{ workflow.name }}</mat-card-title>
+		<mat-card-subtitle>von: {{ ownerNames || 'unbekannt' }}</mat-card-subtitle>
+	</mat-card-header>
+	<mat-card-content *ngIf="!minView">
+		<p>{{ workflow.description }}</p>
+	</mat-card-content>
+	<mat-card-actions align="end">
+		<button mat-icon-button (click)="bookmark()" matTooltip="Lesezeichen hinzufügen">
+			<mat-icon *ngIf="bookmarked">bookmark</mat-icon>
+			<mat-icon *ngIf="!bookmarked">bookmark_outline</mat-icon>
+		</button>
+		<button mat-button *ngIf="currentUser.owns(workflow)" (click)="details()" matTooltip="Informationen zum Workflow">
+			<mat-icon class="material-icons-outlined">info</mat-icon
+			><ng-container *ngIf="!minView"> &nbsp;Details</ng-container>
+		</button>
+		<button
+			mat-flat-button
+			*ngIf="workflow.hasParams"
+			[routerLink]="['/shelf', id, 'runs', 'new']"
+			color="primary"
+			matTooltip="Zur Eingabe der Workflow Parameter"
+		>
+			<mat-icon>edit_note</mat-icon><ng-container *ngIf="!minView"> Konfigurieren</ng-container>
+		</button>
+		<button
+			mat-flat-button
+			*ngIf="!workflow.hasParams"
+			[routerLink]="['/shelf', id, 'runs', 'new']"
+			color="primary"
+			matTooltip="Startet den Workflow"
+		>
+			<mat-icon>play_arrow</mat-icon><ng-container *ngIf="!minView"> Starten</ng-container>
+		</button>
+	</mat-card-actions>
+</mat-card>

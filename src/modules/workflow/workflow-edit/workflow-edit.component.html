@@ -1,0 +1,236 @@
+<h2>
+	<div class="bar">
+		Workflow bearbeiten
+		<button mat-stroked-button (click)="importJsonFile.click()">
+			<mat-icon class="material-icons-outlined">sim_card_download</mat-icon> Importieren
+		</button>
+		<input
+			type="file"
+			#importJsonFile
+			(change)="importJsonFileChange($event)"
+			style="display: none"
+			accept="application/json"
+		/>
+	</div>
+</h2>
+<mat-card>
+	<mat-stepper orientation="vertical" #stepper linear>
+		<mat-step [stepControl]="kindControl" label="Workflow-Typ" state="kind">
+			<div class="formStep">
+				<div class="kindSelect">
+					<button
+						*ngFor="let t of workflowTypes"
+						mat-stroked-button
+						[ngClass]="{ selected: kindControl.value === t }"
+						(click)="kindControl.setValue(t)"
+					>
+						{{ getReadableType(t) }}
+					</button>
+				</div>
+			</div>
+			<div class="actions">
+				<button mat-button matStepperNext [disabled]="!kindControl.valid">
+					<mat-icon>keyboard_arrow_down</mat-icon> weiter
+				</button>
+			</div>
+		</mat-step>
+		<ng-container [formGroup]="wf">
+			<mat-step label="Metadaten" state="metadata">
+				<div class="formStep twoCol">
+					<mat-form-field appearance="fill">
+						<mat-label>Name</mat-label>
+						<input matInput formControlName="name" required />
+						<mat-hint>Überschrift des Workflows</mat-hint>
+						<mat-error *ngIf="wf.ctls.name.hasError('required')">Name ist erforderlich</mat-error>
+					</mat-form-field>
+					<div>
+						<button mat-raised-button color="primary" class="center" (click)="uploadFile.click()">
+							Icon auswählen
+						</button>
+						<mat-error *ngIf="wf.ctls.icon.errors">Bitte icon im PNG-Format bereitstellen</mat-error>
+						<input #uploadFile type="file" (change)="loadImage($event)" accept="image/*" style="display: none" />
+					</div>
+					<mat-form-field appearance="fill">
+						<mat-label>Beschreibung</mat-label>
+						<textarea matInput placeholder="Dieser Workflow kann..." formControlName="description" required></textarea>
+						<mat-hint>Was macht dieser Workflow?</mat-hint>
+						<mat-error *ngIf="wf.ctls.description.hasError('required')">Beschreibung ist erforderlich</mat-error>
+					</mat-form-field>
+					<div class="icoPreview" [ngStyle]="{ backgroundImage: wf.iconStyle }"></div>
+				</div>
+				<div class="actions">
+					<button mat-button matStepperNext [disabled]="!wf.ctls.name.valid || !wf.ctls.description.valid">
+						<mat-icon>keyboard_arrow_down</mat-icon> weiter
+					</button>
+					<button mat-button matStepperPrevious><mat-icon>keyboard_arrow_up</mat-icon></button>
+				</div>
+			</mat-step>
+			<mat-step label="Konfiguration" state="config">
+				<div class="formStep" *ngIf="isKubernetesFg(wf)">
+					<mat-form-field appearance="fill">
+						<mat-label>Image</mat-label>
+						<input matInput placeholder="docker-release..." formControlName="image" />
+						<mat-hint>Docker-Tag</mat-hint>
+						<mat-error *ngIf="wf.ctls.image.hasError('required')">
+							Für einen Kubernetes-Workflow ist ein Image erforderlich.
+						</mat-error>
+					</mat-form-field>
+					<br />
+					<div>
+						<p *ngIf="wf.ctls.command.controls.length === 0">Startbefehl:<br />Standard des angegebenen Images</p>
+						<mat-form-field
+							appearance="fill"
+							class="compound"
+							appAutosize
+							*ngFor="let c of wf.ctls.command.controls; let i = index"
+						>
+							<input matInput [formControl]="c" [placeholder]="['/bin/sh', '-c', '...'][i]" />
+							<button matSuffix mat-icon-button (click)="wf.ctls.command.removeAt(i)">
+								<mat-icon>close</mat-icon>
+							</button>
+							<mat-hint *ngIf="i === 0">Startbefehl</mat-hint>
+							<mat-error *ngIf="wf.ctls.command.at(i).hasError('required')">
+								Bitte ungenutzte Befehlsteile löschen
+							</mat-error>
+						</mat-form-field>
+					</div>
+					<button class="center" mat-stroked-button (click)="wf.pushCommand()">
+						<mat-icon>add</mat-icon>
+						{{ wf.ctls.command.controls.length === 0 ? 'Startbefehl anpassen' : 'Befehlsteil hinzufügen' }}
+					</button>
+				</div>
+				<div class="formStep" *ngIf="isWebWorkerFg(wf)">
+					<mat-form-field appearance="fill" class="code" appAutosize>
+						<mat-label>Skript</mat-label>
+						<textarea matInput placeholder="const foo = () => ..." formControlName="script"></textarea>
+						<button matSuffix mat-icon-button (click)="wf.ctls.script.setValue('')">
+							<mat-icon>upload</mat-icon>
+						</button>
+						<mat-hint>JavaScript</mat-hint>
+						<mat-error *ngIf="wf.ctls.script.hasError('required')">
+							Für einen WebWorker-Workflow eine JavaScript-Implementierung erforderlich.
+						</mat-error>
+					</mat-form-field>
+				</div>
+				<div class="actions">
+					<button mat-button matStepperNext><mat-icon>keyboard_arrow_down</mat-icon> weiter</button>
+					<button mat-button matStepperPrevious><mat-icon>keyboard_arrow_up</mat-icon></button>
+				</div>
+			</mat-step>
+			<mat-step label="Parameterisierung" [stepControl]="wf.ctls.parameterFields" state="parameterization">
+				<div class="formStep">
+					<mat-accordion>
+						<mat-expansion-panel *ngFor="let ctl of wf.ctls.parameterFields.controls; let i = index" [formGroup]="ctl">
+							<mat-expansion-panel-header>
+								<mat-panel-title *ngIf="ctl.value.displayName">{{ ctl.value.displayName }}</mat-panel-title>
+								<mat-panel-title *ngIf="!ctl.value.displayName"><i>unbenannter Parameter</i></mat-panel-title>
+								<mat-panel-description>
+									<span class="code">{{ ctl.value.name }}</span>
+									<mat-icon *ngIf="ctl.parameter">{{ getParameterIcon(ctl.parameter.kind) }}</mat-icon>
+								</mat-panel-description>
+							</mat-expansion-panel-header>
+							<div class="grid">
+								<app-param-edit [ctl]="ctl"></app-param-edit>
+								<div class="previewContainer">
+									<p><i>Vorschau:</i></p>
+									<p class="newlined">{{ ctl.value.description }}</p>
+									<app-param-input [ctl]="previewControls[i]"></app-param-input>
+								</div>
+							</div>
+							<mat-action-row>
+								<button mat-button color="warn" (click)="wf.ctls.parameterFields.removeAt(i)">Parameter Löschen</button>
+							</mat-action-row>
+						</mat-expansion-panel>
+					</mat-accordion>
+					<button mat-stroked-button (click)="addParam()" class="center">
+						<mat-icon>add</mat-icon> Parameter hinzufügen
+					</button>
+				</div>
+				<div class="actions">
+					<button mat-button matStepperNext [disabled]="!wf.ctls.parameterFields.valid">
+						<mat-icon>keyboard_arrow_down</mat-icon> weiter
+					</button>
+					<button mat-button matStepperPrevious><mat-icon>keyboard_arrow_up</mat-icon></button>
+				</div>
+			</mat-step>
+			<mat-step label="Abschließen" state="check">
+				<div class="formStep" *ngIf="!wf.valid || !kindControl.valid">
+					<p>Eingabedaten ungültig.<br />Bitte Fehler im Formular korrigieren um zu speichern.</p>
+				</div>
+				<div class="formStep" *ngIf="wf.valid && kindControl.valid">
+					<table>
+						<tr>
+							<th>Workflow-Typ</th>
+							<td>{{ isKubernetesFg(wf) ? 'Kubernetes' : 'WebWorker' }}</td>
+						</tr>
+						<tr>
+							<th>Name</th>
+							<td>{{ wf.value.name }}</td>
+						</tr>
+						<tr>
+							<th>Beschreibung</th>
+							<td>{{ wf.value.description }}</td>
+						</tr>
+						<tr *ngIf="isKubernetesFg(wf)">
+							<th>Docker-Image</th>
+							<td>
+								<code>{{ wf.value.image }}</code>
+							</td>
+						</tr>
+						<tr *ngIf="isKubernetesFg(wf)">
+							<th>Startbefehl</th>
+							<td *ngIf="wf.ctls.command.value.length > 0" class="code">
+								{{ wf.ctls.command.value | json }}
+							</td>
+							<td *ngIf="wf.ctls.command.value.length === 0"><i>standard</i></td>
+						</tr>
+						<tr *ngIf="isWebWorkerFg(wf)">
+							<th>Skript-Upload</th>
+							<td *ngIf="wf.ctls.script">{{ wf.ctls.script.value.length }} Zeichen</td>
+						</tr>
+						<tr>
+							<th>Parameter</th>
+							<td *ngIf="wf.ctls.parameterFields">
+								<span *ngIf="wf.ctls.parameterFields.length <= 0"><i>keine</i></span>
+								<ul *ngIf="wf.ctls.parameterFields.length > 0">
+									<li *ngFor="let p of wf.ctls.parameterFields.controls">
+										{{ p.value.name }} ({{ p.parameter?.kind }})
+									</li>
+								</ul>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div class="actions">
+					<button mat-flat-button color="primary" (click)="save()" [disabled]="!wf.valid">
+						<mat-icon>save</mat-icon> Speichern
+					</button>
+					<button mat-button matStepperPrevious><mat-icon>keyboard_arrow_up</mat-icon></button>
+				</div>
+			</mat-step>
+		</ng-container>
+		<!-- Icon overrides -->
+		<ng-template matStepperIcon="kind">
+			<mat-icon>type_specimen</mat-icon>
+		</ng-template>
+		<ng-template matStepperIcon="metadata">
+			<mat-icon>description</mat-icon>
+		</ng-template>
+		<ng-template matStepperIcon="config">
+			<mat-icon>settings</mat-icon>
+		</ng-template>
+		<ng-template matStepperIcon="parameterization">
+			<mat-icon>input</mat-icon>
+		</ng-template>
+		<ng-template matStepperIcon="check">
+			<mat-icon>checklist</mat-icon>
+		</ng-template>
+	</mat-stepper>
+</mat-card>
+<br />
+<h2>
+	<div class="bar">
+		<span></span>
+		<button mat-stroked-button (click)="exportJson()"><mat-icon>file_download</mat-icon> Exportieren</button>
+	</div>
+</h2>

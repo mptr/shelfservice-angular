@@ -1,0 +1,39 @@
+$navHeight: 64px;
+$footerHeight: 32px;
+app-nav,
+app-footer {
+	display: block;
+}
+app-nav {
+	height: $navHeight;
+}
+app-messages {
+	position: absolute;
+	right: 1em;
+	bottom: calc($footerHeight + 1em);
+	z-index: 1;
+}
+app-footer {
+	height: $footerHeight;
+}
+mat-drawer-container {
+	min-height: calc(100% - $navHeight - $footerHeight);
+}
+.content {
+	padding: 4em 7em;
+}
+.center {
+	width: fit-content;
+	margin: 0 auto;
+	padding: 10em;
+}
+mat-step {
+	padding: 2em;
+}
+::ng-deep {
+	router-outlet + * {
+		max-width: 1300px;
+		margin: 0 auto;
+		display: block;
+	}
+}

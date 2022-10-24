@@ -1,0 +1,38 @@
+#msgList {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	mat-card {
+		margin: 0 1em 1em;
+		display: grid;
+		grid-template-columns: auto min-content;
+		gap: 0 0.5em;
+		button {
+			transform: translate(5px, -5px);
+		}
+		.wide {
+			grid-column: 1 / span 2;
+		}
+		mat-card-subtitle {
+			margin-bottom: 0;
+		}
+		&.error {
+			border: #be1408 2.5px solid;
+			background-color: #ffe9e7;
+		}
+		&.success {
+			border: #079e01 2.5px solid;
+			background-color: #e0ffe2;
+		}
+		&.warning {
+			border: #deb600 2.5px solid;
+			background-color: #ffe9d3;
+		}
+		&.info {
+			border: var(--primary-color) 2.5px solid;
+			background-color: #ffffff;
+		}
+	}
+	width: 40em;
+	max-width: 80vw;
+}
