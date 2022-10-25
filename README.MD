@@ -12,6 +12,8 @@
    ```
 3. start the backend api by using the instructions in repo shelfservice-nestjs
 
+4. configure via files in `src/environments` according to your setup.
+
 ## Run
 
 ```
